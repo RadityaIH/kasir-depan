@@ -1,6 +1,5 @@
-import { Button, Input, Progress, Radio, Typography } from "@material-tailwind/react";
+import { Button, Input, Option, Progress, Radio, Select, Typography } from "@material-tailwind/react";
 import { useState } from "react";
-import Select from 'react-select'
 
 interface InputProps {
     onPrev: () => void;
@@ -8,6 +7,12 @@ interface InputProps {
 }
 
 export default function InputPage3 ({ onPrev, onNext }: InputProps) {
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+        }).format(value);
+    };
     return (
         <>
         <Progress value={66} placeholder="" className="mb-3" color="red"></Progress>
@@ -36,6 +41,18 @@ export default function InputPage3 ({ onPrev, onNext }: InputProps) {
                     <Radio name="type" label="Cash" color="red" crossOrigin=""/>
                     <Radio name="type" label="Debit" color="red" crossOrigin=""/>
                     <Radio name="type" label="CC" color="red" crossOrigin=""/>
+                </div>
+            </div>
+
+            <div className="ml-1 mt-5 flex items-center">
+                <div className="w-1/5">
+                    <Typography variant="paragraph">Bank</Typography>
+                </div>
+                <div className="w-1/4">
+                    <Select placeholder="" label="Bank yang Digunakan">
+                        <Option>Mandiri</Option>
+                        <Option>BNI</Option>
+                    </Select>
                 </div>
             </div>
             

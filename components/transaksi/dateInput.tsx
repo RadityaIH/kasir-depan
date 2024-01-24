@@ -6,19 +6,26 @@ import {
   PopoverContent,
 } from "@material-tailwind/react";
 import { format } from "date-fns";
+import { id } from "date-fns/locale";
 import { DayPicker } from "react-day-picker";
 import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
  
 
 export default function DateInput() {
     const [date, setDate] = React.useState<Date>();
+
+    const formatDate = (date: Date) => {
+        return format(date, "d MMMM yyyy", { locale: id });
+    };
+      
+      
     return (
         <>
             <Popover placement="bottom">
                 <PopoverHandler>
                     <Input
                         onChange={() => null}
-                        value={date ? format(date, "PPP") : ""}
+                        value={date ? formatDate(date) : ""}
                         placeholder=""
                         crossOrigin=""
                         className="bg-gray-50"

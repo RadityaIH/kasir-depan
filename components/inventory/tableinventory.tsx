@@ -36,7 +36,15 @@ export default function InventoryTable({ TABLE_HEAD, TABLE_ROWS, isSearched }: I
         if (isSearched) {
             setcurrentPage(1);
         }
-      }, [TABLE_ROWS]);
+    }, [TABLE_ROWS]);
+
+    const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+    }).format(value);
+    };
+
     return (
         <>
             <Card className="overflow-auto h-auto" placeholder={"table"}>
@@ -87,7 +95,7 @@ export default function InventoryTable({ TABLE_HEAD, TABLE_ROWS, isSearched }: I
                                 </td> 
                                 <td className="p-4">
                                     <Typography variant="small" color="blue-gray" classname="font-normal">
-                                        {data.harga}
+                                        {formatCurrency(data.harga * (1.11/0.7))}
                                     </Typography>
                                 </td> 
                             </tr>
