@@ -1,118 +1,166 @@
+import Head from "next/head";
+import {
+  Card,
+  Input,
+  Button,
+  Typography,
+} from "@material-tailwind/react";
 import Image from 'next/image'
-import { Inter } from 'next/font/google'
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { setCookie, deleteCookie, getCookie } from "cookies-next"
 
-const inter = Inter({ subsets: ['latin'] })
+// type User = {
+//   username: string;
+// }
 
-export default function Home() {
+export default function Login() {
+  // const [data, setData] = useState<User[]>([]);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+  const [error, setError] = useState(false);
+  const [notFilled, setNotFilled] = useState(false);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const res = await fetch(`${process.env.BACKEND_API}/cekUser`);
+  //       const responseData = await res.json();
+  //       setData(responseData)
+  //     } catch (err) {
+  //       console.log(err)
+  //     }
+  //   };
+  //   fetchData();
+  // }, [])
+
+  // console.log(data)
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    if (username === "" || password === "") {
+      setNotFilled(true);
+      setError(false);
+      return;
+    }
+    try {
+      const res = await fetch(`${process.env.BACKEND_API}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
+
+      const responseData = await res.json();
+      setCookie("token", responseData.token, {maxAge: 60 * 60 * 12,})
+      console.log(responseData)
+
+      if (responseData.success) {
+        router.push("/kasir");
+      } else {
+        setError(true);
+        setNotFilled(false);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const token = getCookie("token");
+  useEffect(() => {
+    deleteCookie("token")
+    console.log("cek:", token)
+  }, [token])
+
   return (
-    <main
-      className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
-    >
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">pages/index.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
+    <>
+      <Head>
+        <title>Login</title>
+      </Head>
+
+      <div className="h-screen w-screen relative flex">
+        <div className="w-1/2 h-full flex justify-center items-center">
             <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+                src="/../../offo-living.png"
+                width={500}
+                height={500}
+                alt="Picture of the author"></Image>
+            <Typography className="text-center mt-2 absolute bottom-3 text-gray-500">by Raditya Ilham Hastoro - Informatika '21 - Diponegoro University</Typography>
+        </div>
+        <div className="w-1/2 h-full flex items-center justify-center bg-orange">
+          <div className="flex flex-col justify-center bg-white shadow-lg shadow-blue-500/20 z-30 px-14 py-5 border-solid border-2 w-5/6 h-5/6 rounded-lg">
+            <Typography variant="h1" className="text-center">Login</Typography>
+            {/* If error is true, show error message */}
+            {error && (
+                  <div
+                  className="mt-10 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                  role="alert"
+                  >
+                  <strong className="font-bold">Login gagal. </strong>
+                  <span className="block sm:inline">
+                      Username atau password salah!
+                  </span>
+                  </div>
+              )
+            }
+            {notFilled && (
+                  <div
+                  className="mt-10 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                  role="alert"
+                  >
+                  <span className="block sm:inline">
+                      Username atau password harus diisi!
+                  </span>
+                  </div>
+              )
+            }
+            <form className="flex flex-col">
+              <Typography variant="paragraph" className="mt-8">Username</Typography>
+              <Input
+                size="lg"
+                placeholder="Masukkan Username"
+                crossOrigin=''
+                className="h-10 !border-t-blue-gray-200 focus:!border-t-gray-900"
+                labelProps={{
+                  className: "before:content-none after:content-none",
+                }}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        handleSubmit(e);
+                    }
+                }}
+              />
+              <Typography variant="paragraph" className="mt-4">Password</Typography>
+              <Input
+                type="password"
+                size="lg"
+                placeholder="Masukkan password"
+                crossOrigin=''
+                className="h-10 !border-t-blue-gray-200 focus:!border-t-gray-900"
+                labelProps={{
+                    className: "before:content-none after:content-none",
+                }}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                    handleSubmit(e);
+                    }
+                }}
+              />
+              <Button className="mt-14 bg-orange" fullWidth placeholder="Login" onClick={handleSubmit}>Login</Button>
+            </form>
+          </div>
         </div>
       </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700/10 after:dark:from-sky-900 after:dark:via-[#0141ff]/40 before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Discover and deploy boilerplate example Next.js&nbsp;projects.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    </>
+  );
 }
