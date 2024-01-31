@@ -7,13 +7,12 @@ interface InputProps {
     onPrev: () => void;
 }
 
-export default function InputPage4 ({ onPrev }: InputProps) {
+export default function InputPage4({ onPrev }: InputProps) {
     return (
         <>
-        <Progress value={100} placeholder="" className="mb-3" color="red"></Progress>
-        <Typography variant="h5" className="my-5 text-center">Rekap</Typography>
-        
-        <form>
+            <Progress value={100} placeholder="" className="mb-3" color="red"></Progress>
+            <Typography variant="h5" className="my-5 text-center">Rekap</Typography>
+
             <Typography variant="h6" className="my-5 text-center">Data Customer</Typography>
             <div className="ml-1 mt-5 flex items-center">
                 <div className="w-1/4">
@@ -190,7 +189,6 @@ export default function InputPage4 ({ onPrev }: InputProps) {
                     Konfirmasi & Simpan
                 </Button>
             </div>
-        </form>
         </>
     )
 }

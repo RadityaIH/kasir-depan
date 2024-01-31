@@ -1,5 +1,6 @@
 import { Button, Input, Progress, Textarea, Typography } from "@material-tailwind/react";
-import { useState } from "react";
+import { getCookie } from "cookies-next";
+import { useEffect, useState } from "react";
 import Select from 'react-select'
 
 interface InputProps {
@@ -11,28 +12,81 @@ interface OptionType {
     label: string;
 }
 
+const token = getCookie("token");
+
 export default function InputPage1({ onNext }: InputProps) {
-    
-    const customerOptions = [
-        { value: 'add', label: 'Customer Baru' },
-        { value: '1', label: 'Customer 1' },
-        // Add more customer options as needed
-    ];
-    
+    const [custData, setCustData] = useState<any | null>(null);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const token = getCookie("token");
+
+                if (token) {
+                    const response = await fetch(`${process.env.BACKEND_API}/getCust`, {
+                        method: "GET",
+                        credentials: "include",
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    setCustData(data);
+                    console.log(data);
+                }
+
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        };
+
+        fetchUserData();
+        console.log(custData);
+    }, [token]);
+
+    const newCustomerOption: OptionType = { value: 'add', label: 'Customer Baru' };
+
+    // Buat opsi dari custData atau array kosong jika custData masih kosong
+    const customerOptions: OptionType[] = custData ? [newCustomerOption, ...custData.map((cust: any) => ({
+        value: cust.id.toString(), // Ubah ke string jika perlu
+        label: cust.nama_cust
+    }))] : [newCustomerOption];
+
     const [selectedCustomer, setSelectedCustomer] = useState({ value: 'add', label: 'Customer Baru' });
-    
+    const [nama_cust, setNamaCustomer] = useState("");
+    const [no_telp, setNoCustomer] = useState("");
+    const [alamat, setAlamat] = useState("");
     const handleChange = (selectedOption: OptionType | null) => {
         if (selectedOption) {
             setSelectedCustomer(selectedOption);
+
+            // Cari data pelanggan yang sesuai dengan opsi yang dipilih
+            const selectedCustomerData = custData.find((cust: any) => cust.id.toString() === selectedOption.value);
+
+            // Jika data pelanggan ditemukan, isi nilai input dengan data tersebut
+            if (selectedCustomerData) {
+                setNamaCustomer(selectedCustomerData.nama_cust);
+                setNoCustomer(selectedCustomerData.no_telp);
+                setAlamat(selectedCustomerData.alamat);
+            } else {
+                // Jika data pelanggan tidak ditemukan, reset nilai input
+                setNamaCustomer("");
+                setNoCustomer("");
+                setAlamat("");
+            }
         }
     };
 
     return (
         <>
-        <Progress value={0} placeholder="" className="mb-3" color="red"></Progress>
-        <Typography variant="h5" className="my-5 text-center">Data Customer</Typography>
-        
-        <form>
+            <Progress value={0} placeholder="" className="mb-3" color="red"></Progress>
+            <Typography variant="h5" className="my-5 text-center">Data Customer</Typography>
+
             <div className="flex ml-1 mb-1">
                 <Typography variant="paragraph">Pilih Customer</Typography>
             </div>
@@ -56,6 +110,8 @@ export default function InputPage1({ onNext }: InputProps) {
                     name="nama_customer"
                     crossOrigin=""
                     label="Nama Customer"
+                    value={nama_cust ? nama_cust : ""}
+                    onChange={(e) => setNamaCustomer(e.target.value)}
                     className="bg-gray-50"></Input>
             </div>
 
@@ -68,6 +124,8 @@ export default function InputPage1({ onNext }: InputProps) {
                     name="no_customer"
                     crossOrigin=""
                     label="No Telepon Customer"
+                    value={no_telp ? no_telp : ""}
+                    onChange={(e) => setNoCustomer(e.target.value)}
                     className="bg-gray-50"></Input>
             </div>
 
@@ -79,6 +137,8 @@ export default function InputPage1({ onNext }: InputProps) {
                     id="alamat"
                     name="alamat"
                     label="Alamat Customer"
+                    value={alamat ? alamat : ""}
+                    onChange={(e) => setAlamat(e.target.value)}
                     className="bg-gray-50"></Textarea>
             </div>
 
@@ -91,7 +151,6 @@ export default function InputPage1({ onNext }: InputProps) {
                     <p className="text-green-500">Simpan & Selanjutnya</p>
                 </Button>
             </div>
-        </form>                           
-    </>
+        </>
     )
 }

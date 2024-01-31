@@ -6,7 +6,7 @@ interface InputProps {
     onNext: () => void;
 }
 
-export default function InputPage3 ({ onPrev, onNext }: InputProps) {
+export default function InputPage3({ onPrev, onNext }: InputProps) {
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat("id-ID", {
             style: "currency",
@@ -15,10 +15,8 @@ export default function InputPage3 ({ onPrev, onNext }: InputProps) {
     };
     return (
         <>
-        <Progress value={66} placeholder="" className="mb-3" color="red"></Progress>
-        <Typography variant="h5" className="my-5 text-center">Data Pembayaran</Typography>
-
-        <form>
+            <Progress value={66} placeholder="" className="mb-3" color="red"></Progress>
+            <Typography variant="h5" className="my-5 text-center">Data Pembayaran</Typography>
             <div className="ml-1 mt-5 flex items-center">
                 <div className="w-1/4">
                     <Typography variant="paragraph">Total Harga</Typography>
@@ -38,9 +36,9 @@ export default function InputPage3 ({ onPrev, onNext }: InputProps) {
                 </div>
 
                 <div className="" id="metode_bayar">
-                    <Radio name="type" label="Cash" color="red" crossOrigin=""/>
-                    <Radio name="type" label="Debit" color="red" crossOrigin=""/>
-                    <Radio name="type" label="CC" color="red" crossOrigin=""/>
+                    <Radio name="type" label="Cash" color="red" crossOrigin="" />
+                    <Radio name="type" label="Debit" color="red" crossOrigin="" />
+                    <Radio name="type" label="CC" color="red" crossOrigin="" />
                 </div>
             </div>
 
@@ -55,7 +53,7 @@ export default function InputPage3 ({ onPrev, onNext }: InputProps) {
                     </Select>
                 </div>
             </div>
-            
+
             <div className="ml-1 mt-5 flex items-center">
                 <div className="w-1/4">
                     <Typography variant="paragraph">Down Payment</Typography>
@@ -100,7 +98,6 @@ export default function InputPage3 ({ onPrev, onNext }: InputProps) {
                     Selanjutnya
                 </Button>
             </div>
-        </form>
         </>
     )
 }

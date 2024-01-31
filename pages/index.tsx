@@ -91,7 +91,7 @@ export default function Login() {
                 width={500}
                 height={500}
                 alt="Picture of the author"></Image>
-            <Typography className="text-center mt-2 absolute bottom-3 text-gray-500">by Raditya Ilham Hastoro - Informatika '21 - Diponegoro University</Typography>
+            <Typography className="text-center mt-2 absolute bottom-3 text-gray-500">by Raditya Ilham Hastoro - Informatika &rsquo;21 - Diponegoro University</Typography>
         </div>
         <div className="w-1/2 h-full flex items-center justify-center bg-orange">
           <div className="flex flex-col justify-center bg-white shadow-lg shadow-blue-500/20 z-30 px-14 py-5 border-solid border-2 w-5/6 h-5/6 rounded-lg">

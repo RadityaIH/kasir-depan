@@ -58,28 +58,27 @@ export default function InputPage2({ onPrev, onNext }: InputProps) {
             <Progress value={33} placeholder="" className="mb-3" color="red"></Progress>
             <Typography variant="h5" className="my-5 text-center">Data Produk</Typography>
 
-            <form>
-                <div className="flex gap-5">
-                    <div className="w-3/4 ml-1">
-                        <Typography variant="paragraph">Pilih Sales</Typography>
-                        <Select
+            <div className="flex gap-5">
+                <div className="w-3/4 ml-1">
+                    <Typography variant="paragraph">Pilih Sales</Typography>
+                    <Select
                         id="pilih_sales"
                         name="pilih_sales"
                         value={selectedSales}
                         onChange={handleChangeSales}
                         options={salesOptions}
                         className="w-full bg-gray-50"
-                        />
-                    </div>
-
-                    <div className="w-1/2 ml-1">
-                        <Typography variant="paragraph">Estimasi Tanggal Pengantaran</Typography>
-                        <DateInput />
-                    </div>
+                    />
                 </div>
 
-                {products.map((product) => 
-                <div className="p-3 border-4 border-dashed mt-7 rounded-lg">
+                <div className="w-1/2 ml-1">
+                    <Typography variant="paragraph">Estimasi Tanggal Pengantaran</Typography>
+                    <DateInput />
+                </div>
+            </div>
+
+            {products.map((product) =>
+                <div key={product.id} className="p-3 border-4 border-dashed mt-7 rounded-lg">
                     <div className="flex ml-1 mb-1 mt-4">
                         <Typography variant="paragraph">Pilih Produk</Typography>
                     </div>
@@ -144,7 +143,7 @@ export default function InputPage2({ onPrev, onNext }: InputProps) {
                     </div>
 
                     <div className="ml-1 mb-1 mt-3">
-                    <Typography variant="paragraph">Remarks</Typography>
+                        <Typography variant="paragraph">Remarks</Typography>
                     </div>
                     <div className="ml-1">
                         <Textarea
@@ -155,55 +154,55 @@ export default function InputPage2({ onPrev, onNext }: InputProps) {
                     </div>
 
                     <div className="justify-center flex">
-                            {products.length > 1 && (
-                                <button
-                                    className="ml-1 mt-3 bg-red-500 rounded-full p-2"
-                                    onClick={() => handleRemoveProduct(product.id)}
-                                    type="button"
+                        {products.length > 1 && (
+                            <button
+                                className="ml-1 mt-3 bg-red-500 rounded-full p-2"
+                                onClick={() => handleRemoveProduct(product.id)}
+                                type="button"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    className="w-6 h-6"
                                 >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        className="w-6 h-6"
-                                    >
-                                        <path
+                                    <path
                                         stroke="#FFF"
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         strokeWidth={2}
                                         d="M10 11v6M14 11v6M4 7h16M6 7h12v11a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3V7ZM9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2H9V5Z"
-                                        />
-                                    </svg>
-                                </button>
-                            )}
+                                    />
+                                </svg>
+                            </button>
+                        )}
                     </div>
                 </div>
-                )}
+            )}
 
-                <div className="justify-center flex">
-                    <button className="ml-1 mt-3 bg-black p-1 rounded-full" onClick={handleAddProduct} type="button">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            className="w-8 h-8"
-                        >
-                            <title />
-                            <g
+            <div className="justify-center flex">
+                <button className="ml-1 mt-3 bg-black p-1 rounded-full" onClick={handleAddProduct} type="button">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        className="w-8 h-8"
+                    >
+                        <title />
+                        <g
                             fill="none"
                             stroke="#FFF"
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={2}
                             data-name="add"
-                            >
+                        >
                             <path d="M12 19V5M5 12h14" />
-                            </g>
-                        </svg>
-                    </button>
-                </div>
+                        </g>
+                    </svg>
+                </button>
+            </div>
 
-                <div className="justify-between flex">
+            <div className="justify-between flex">
                 <Button
                     className="mt-5 ml-1 bg-gray-100 border border-blue-500"
                     // type="submit"
@@ -219,8 +218,7 @@ export default function InputPage2({ onPrev, onNext }: InputProps) {
                     placeholder="">
                     Selanjutnya
                 </Button>
-                </div>
-            </form>
+            </div>
         </>
     )
 }

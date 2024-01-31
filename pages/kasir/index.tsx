@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import { getCookie, setCookie, deleteCookie } from "cookies-next";
 import Head from "next/head";
 import { Card, CardHeader, Typography } from "@material-tailwind/react";
@@ -6,7 +5,6 @@ import { Card, CardHeader, Typography } from "@material-tailwind/react";
 const token = getCookie("token");
 
 export default function dashboardKasir () {
-    const router = useRouter();
     console.log(token)
     return (
         <>
