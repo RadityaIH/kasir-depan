@@ -47,7 +47,7 @@ export default function InputPage2({ onPrev, onNext }: InputProps) {
     const handleChangeProduct = (selectedOption: OptionType | null, productId: number) => {
         if (selectedOption) {
             const updatedProducts = products.map(product =>
-                product.id === productId ? { ...product, selectedProduct: selectedOption } : product
+                product.id === productId ? { ...product, selectedProduct: selectedOption.value } : product
             );
             setProducts(updatedProducts);
         }
