@@ -82,10 +82,10 @@ export default function Profile() {
         });
 
         // Check if any field is empty or undefined
-        if (!username || !nama_lengkap) {
+        if (!username || !nama_lengkap || (password_lama && !password_baru)) {
             setFilled(true);
-            setSuccess(false);
             setError(true);
+            setSuccess(false);
             setWPassword(false);
             return;
         }
@@ -106,18 +106,12 @@ export default function Profile() {
                     },
                     withCredentials: true // Ensure credentials are sent with the request
                 });
-        
-                if (response && response.data.error === "Password lama salah") {
-                    setWPassword(true);
-                    setError(true);
-                    setFilled(false);
-                    setSuccess(false);
-                }
 
                 // Check response status
                 if (response.status !== 200) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
+
         
                 const data = response.data;
                 setSuccess(true);
@@ -125,16 +119,25 @@ export default function Profile() {
                 setFilled(false);
                 setWPassword(false);
                 console.log(data);
-                window.location.reload();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+                
             }
 
-
-
-        } catch (error) {
+        } catch (error: any) {
             console.error('Fetch error:', error);
+            if (error.response.data.error.includes("Password lama salah")) {
+                setWPassword(true);
+                setError(true);
+                setFilled(false);
+                setSuccess(false);
+            } else {
             setError(true);
             setSuccess(false);
             setFilled(false);
+            setWPassword(false);
+            }
         }
     };
 
@@ -149,10 +152,6 @@ export default function Profile() {
             <Card className="p-3 h-auto" placeholder={"card"}>
                 <div className="ml-1">
                     <Typography variant="h4" className="mb-5">Profil</Typography>
-                    {/* {filled && (
-                        <Fail Title="Gagal Menyimpan!" Caption="Seluruh kolom harus diisi!" />
-                    )
-                    } */}
                     {success && (
                         <Success Title="Berhasil!" Caption="Data Profil Berhasil Diperbarui." />
                     )

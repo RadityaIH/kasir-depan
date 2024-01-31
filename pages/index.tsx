@@ -9,6 +9,7 @@ import Image from 'next/image'
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { setCookie, deleteCookie, getCookie } from "cookies-next"
+import Fail from "@/components/fail";
 
 // type User = {
 //   username: string;
@@ -97,26 +98,13 @@ export default function Login() {
             <Typography variant="h1" className="text-center">Login</Typography>
             {/* If error is true, show error message */}
             {error && (
-                  <div
-                  className="mt-10 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-                  role="alert"
-                  >
-                  <strong className="font-bold">Login gagal. </strong>
-                  <span className="block sm:inline">
-                      Username atau password salah!
-                  </span>
-                  </div>
+                  <Fail Title="Login gagal." 
+                  Caption="Username atau password salah!" />
               )
             }
             {notFilled && (
-                  <div
-                  className="mt-10 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-                  role="alert"
-                  >
-                  <span className="block sm:inline">
-                      Username atau password harus diisi!
-                  </span>
-                  </div>
+                  <Fail Title="Login gagal." 
+                  Caption="Username atau password harus diisi!" />
               )
             }
             <form className="flex flex-col">
