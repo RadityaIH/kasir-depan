@@ -2,9 +2,14 @@ import { Button, Input, Progress, Textarea, Typography } from "@material-tailwin
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import Select from 'react-select'
+import Fail from "../fail";
+import axios from "axios";
+import { set } from "lodash";
 
 interface InputProps {
     onNext: () => void;
+    dataCust: { nama: string, no_telp: string, alamat: string }
+    setDataCust: (data: any) => void;
 }
 
 interface OptionType {
@@ -14,8 +19,9 @@ interface OptionType {
 
 const token = getCookie("token");
 
-export default function InputPage1({ onNext }: InputProps) {
-    const [custData, setCustData] = useState<any | null>(null);
+export default function InputPage1({ onNext, dataCust, setDataCust }: InputProps) {
+    // FOR SELECT OPTIONS
+    const [resCust, setResCust] = useState<any | null>(null);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -36,8 +42,7 @@ export default function InputPage1({ onNext }: InputProps) {
                     }
 
                     const data = await response.json();
-                    setCustData(data);
-                    console.log(data);
+                    setResCust(data);
                 }
 
             } catch (error) {
@@ -46,17 +51,17 @@ export default function InputPage1({ onNext }: InputProps) {
         };
 
         fetchUserData();
-        console.log(custData);
     }, [token]);
 
     const newCustomerOption: OptionType = { value: 'add', label: 'Customer Baru' };
 
-    // Buat opsi dari custData atau array kosong jika custData masih kosong
-    const customerOptions: OptionType[] = custData ? [newCustomerOption, ...custData.map((cust: any) => ({
-        value: cust.id.toString(), // Ubah ke string jika perlu
+    const customerOptions: OptionType[] = resCust ? [newCustomerOption, ...resCust.map((cust: any) => ({
+        value: cust.id.toString(),
         label: cust.nama_cust
     }))] : [newCustomerOption];
 
+
+    // HANNDLE SELECT
     const [selectedCustomer, setSelectedCustomer] = useState({ value: 'add', label: 'Customer Baru' });
     const [nama_cust, setNamaCustomer] = useState("");
     const [no_telp, setNoCustomer] = useState("");
@@ -64,17 +69,12 @@ export default function InputPage1({ onNext }: InputProps) {
     const handleChange = (selectedOption: OptionType | null) => {
         if (selectedOption) {
             setSelectedCustomer(selectedOption);
-
-            // Cari data pelanggan yang sesuai dengan opsi yang dipilih
-            const selectedCustomerData = custData.find((cust: any) => cust.id.toString() === selectedOption.value);
-
-            // Jika data pelanggan ditemukan, isi nilai input dengan data tersebut
+            const selectedCustomerData = resCust.find((cust: any) => cust.id.toString() === selectedOption.value);
             if (selectedCustomerData) {
                 setNamaCustomer(selectedCustomerData.nama_cust);
                 setNoCustomer(selectedCustomerData.no_telp);
                 setAlamat(selectedCustomerData.alamat);
             } else {
-                // Jika data pelanggan tidak ditemukan, reset nilai input
                 setNamaCustomer("");
                 setNoCustomer("");
                 setAlamat("");
@@ -82,12 +82,104 @@ export default function InputPage1({ onNext }: InputProps) {
         }
     };
 
+    //HANDLE SUBMIT
+    const [notFilled, setNotFilled] = useState(false);
+    const [error, setError] = useState(false);
+    const handleSubmit = async (event: any) => {
+        event.preventDefault();
+
+        if (!nama_cust || !no_telp || !alamat) {
+            setNotFilled(true);
+            setError(false);
+            return;
+        }
+
+        if (nama_cust || no_telp || alamat) {
+            setDataCust({
+                nama: nama_cust,
+                no_telp: no_telp,
+                alamat: alamat,
+            });
+        }
+
+        try {
+            const token = getCookie("token");
+
+            if (token) {
+                if (selectedCustomer.value === "add") {
+                    const response = await axios.post(`${process.env.BACKEND_API}/addCust`, {
+                        nama: nama_cust,
+                        no_telp: no_telp,
+                        alamat: alamat
+                    }, {
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                        withCredentials: true // Ensure credentials are sent with the request
+                    });
+                    // Check response status
+                    if (response.status !== 200) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    setNotFilled(false);
+                    setError(false);
+                    onNext();
+                } else {
+                    const response = await axios.put(`${process.env.BACKEND_API}/updateCust`, {
+                        id: selectedCustomer.value,
+                        nama: nama_cust,
+                        no_telp: no_telp,
+                        alamat: alamat
+                    }, {
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                        withCredentials: true // Ensure credentials are sent with the request
+                    });
+                    // Check response status
+                    if (response.status !== 200) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    setNotFilled(false);
+                    setError(false);
+                    onNext();
+                }
+
+            }
+
+        } catch (error: any) {
+            console.error('Fetch error:', error);
+            setNotFilled(false);
+            setError(true);
+        }
+
+
+    }
+
+    // SET DATA JIKA SUDAH ADA DARI PARENTS
+    useEffect(() => {
+        const existingCustomerOption = customerOptions.find((option) => option.label === dataCust.nama);
+        if (existingCustomerOption) {
+            setSelectedCustomer(existingCustomerOption);
+        }
+        setNamaCustomer(dataCust.nama)
+        setNoCustomer(dataCust.no_telp)
+        setAlamat(dataCust.alamat)
+
+    }, [dataCust, resCust])
+
+
+
     return (
         <>
             <Progress value={0} placeholder="" className="mb-3" color="red"></Progress>
-            <Typography variant="h5" className="my-5 text-center">Data Customer</Typography>
+            <Typography variant="h5" className="text-center">Data Customer</Typography>
 
-            <div className="flex ml-1 mb-1">
+            {(notFilled || error) && <Fail Title="Gagal Menyimpan!" Caption={notFilled ? `Seluruh Kolom Harus Diisi!` : `Terjadi kesalahan`} />}
+            <div className="flex ml-1 mb-1 mt-5">
                 <Typography variant="paragraph">Pilih Customer</Typography>
             </div>
             <div className="ml-1">
@@ -110,8 +202,10 @@ export default function InputPage1({ onNext }: InputProps) {
                     name="nama_customer"
                     crossOrigin=""
                     label="Nama Customer"
-                    value={nama_cust ? nama_cust : ""}
+                    // value={dataCust ? dataCust.nama : ""}
+                    value={nama_cust}
                     onChange={(e) => setNamaCustomer(e.target.value)}
+                    // onChange={(e) => setDataCust({ ...dataCust, nama: e.target.value })}
                     className="bg-gray-50"></Input>
             </div>
 
@@ -124,7 +218,9 @@ export default function InputPage1({ onNext }: InputProps) {
                     name="no_customer"
                     crossOrigin=""
                     label="No Telepon Customer"
-                    value={no_telp ? no_telp : ""}
+                    // value={dataCust ? dataCust.no_telp : ""}
+                    // onChange={(e) => setDataCust({ ...dataCust, no_telp: e.target.value })}
+                    value={no_telp}
                     onChange={(e) => setNoCustomer(e.target.value)}
                     className="bg-gray-50"></Input>
             </div>
@@ -137,7 +233,9 @@ export default function InputPage1({ onNext }: InputProps) {
                     id="alamat"
                     name="alamat"
                     label="Alamat Customer"
-                    value={alamat ? alamat : ""}
+                    // value={dataCust ? dataCust.alamat : ""}
+                    // onChange={(e) => setDataCust({ ...dataCust, alamat: e.target.value })}
+                    value={alamat}
                     onChange={(e) => setAlamat(e.target.value)}
                     className="bg-gray-50"></Textarea>
             </div>
@@ -145,8 +243,7 @@ export default function InputPage1({ onNext }: InputProps) {
             <div className="justify-end flex mt-5">
                 <Button
                     className="bg-gray-100 border border-green-500"
-                    // type="submit"
-                    onClick={onNext}
+                    onClick={handleSubmit}
                     placeholder="">
                     <p className="text-green-500">Simpan & Selanjutnya</p>
                 </Button>

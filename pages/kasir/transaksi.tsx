@@ -4,7 +4,7 @@ import { Button, Card, CardHeader, Input, Option, Progress, Select, Textarea, Ty
 import InputPage1 from "@/components/transaksi/InputPage1";
 import InputPage2 from "@/components/transaksi/InputPage2";
 import InputPage3 from "@/components/transaksi/InputPage3";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InputPage4 from "@/components/transaksi/InputPage4";
 
 export default function Transaksi() {
@@ -17,6 +17,8 @@ export default function Transaksi() {
     const handlePrev = () => {
         setCurrentPage(currentPage - 1);
     }
+
+    const [dataCust, setDataCust] = useState({ nama: "", no_telp: "", alamat: "" });
     
     return (
         <>
@@ -28,7 +30,7 @@ export default function Transaksi() {
                     <Typography variant="h4" className="mb-5">Transaksi Baru</Typography>
 
                     <Card className="p-3 border-solid border-2" placeholder="">
-                        {currentPage === 1 && <InputPage1 onNext={handleNext}/>}
+                        {currentPage === 1 && <InputPage1 onNext={handleNext} dataCust={dataCust} setDataCust={setDataCust}/>}
                         {currentPage === 2 && <InputPage2 onPrev={handlePrev} onNext={handleNext}/>}
                         {currentPage === 3 && <InputPage3 onPrev={handlePrev} onNext={handleNext}/>}
                         {currentPage === 4 && <InputPage4 onPrev={handlePrev}/>}
