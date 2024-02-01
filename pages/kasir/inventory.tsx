@@ -63,11 +63,7 @@ export default function Inventory() {
             <Card className="p-3 h-auto" placeholder={"card"}>
                 <div className="ml-1">
                     <Typography variant="h4" className="mb-5">Inventory Gudang</Typography>
-                    {loading ? 
-                        <div className="flex justify-center items-center h-screen">
-                        <Spinner color="red" />
-                        </div>
-                    : <>
+                    
                     <div className="justify-end flex">
                         <div className="w-4/12 mb-5">
                             <Input
@@ -91,7 +87,11 @@ export default function Inventory() {
                             />
                         </div>
                     </div>
-                    
+                    {loading ? 
+                        <div className="flex justify-center items-center h-screen">
+                        <Spinner color="red" />
+                        </div>
+                    : <>
                     <InventoryTable TABLE_HEAD={TABLE_HEAD} TABLE_ROWS={finalData} isSearched={searched}/>
                     </>}
                 </div>

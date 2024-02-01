@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Input,
   Popover,
@@ -9,15 +9,32 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { DayPicker } from "react-day-picker";
 import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
- 
 
-export default function DateInput() {
+interface InputProps {
+    dateSQL: string;
+    setDateSQL: (tanggal: string) => void;
+}
+
+
+export default function DateInput({dateSQL, setDateSQL}: InputProps) {
     const [date, setDate] = React.useState<Date>();
 
     const formatDate = (date: Date) => {
+        // return format(date, "d MMMM yyyy", { locale: id });
         return format(date, "d MMMM yyyy", { locale: id });
     };
-      
+
+    useEffect(() => {
+        if (date) {
+            setDateSQL(format(date, "yyyy-MM-dd"));
+        }
+    }, [date])
+
+    useEffect(() => {
+        if (dateSQL) {
+            setDate(new Date(dateSQL));
+        }
+    }, [dateSQL])
       
     return (
         <>
