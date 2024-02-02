@@ -20,13 +20,13 @@ export default function Transaksi() {
     }
 
     const [dataCust, setDataCust] = useState({ nama: "", no_telp: "", alamat: "" });
-    const [dataPage2, setDataPage2] = useState({ sales: "", jadwal_kirim: "", id_produk: 0, kode_produk: "", nama_produk: "", qty: 0, harga: 0, remarks: "" });
+    // const [dataPage2, setDataPage2] = useState({ sales: "", jadwal_kirim: "", id_produk: 0, kode_produk: "", nama_produk: "", qty: 0, harga: 0, remarks: "", total_harga: 0});
+    const [dataPage2, setDataPage2] = useState({ sales: "", jadwal_kirim: "", produkPage2: [], total_harga: 0 });
     const [dataPage3, setDataPage3] = useState({ total_harga: 0, metodeBayar1Mix: "", metodeBayar2Mix: "", downPayment1: 0, downPayment2: 0, balance_due: 0 })
 
     const router = useRouter();
     const [savedStat, setSavedStat] = useState(false);
     useEffect(() => {
-        console.log(savedStat)
         const handleBeforeUnload = (event: any) => {
             if (currentPage !== 1 && !savedStat) {
                 event.preventDefault();
@@ -67,7 +67,7 @@ export default function Transaksi() {
                         {currentPage === 3 && <InputPage3
                             onPrev={handlePrev}
                             onNext={handleNext}
-                            total_harga={dataPage2.harga * (1.11 / 0.7) * dataPage2.qty}
+                            total_harga={dataPage2.total_harga}
                             dataPage3={dataPage3}
                             setDataPage3={setDataPage3} />}
                         {currentPage === 4 && <InputPage4 onPrev={handlePrev} dataCust={dataCust} dataPage2={dataPage2} dataPage3={dataPage3} setSavedStat={setSavedStat}/>}

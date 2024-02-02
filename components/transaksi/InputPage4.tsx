@@ -7,9 +7,19 @@ import Success from "../success";
 interface InputProps {
     onPrev: () => void;
     dataCust: { nama: string, no_telp: string, alamat: string }
-    dataPage2: { sales: string, jadwal_kirim: string, id_produk: number, kode_produk: string, nama_produk: string, qty: number, harga: number, remarks: string }
+    dataPage2: { sales: string, jadwal_kirim: string, produkPage2: ProductChosen[], total_harga: number};
     dataPage3: { total_harga: number, metodeBayar1Mix: string, metodeBayar2Mix: string, downPayment1: number, downPayment2: number, balance_due: number }
     setSavedStat: (data: boolean) => void;
+}
+
+interface ProductChosen {
+    idx: number
+    id_produk: number;
+    kode_produk: string;
+    nama_produk: string;
+    qty: number;
+    harga: number;
+    remarks: string;
 }
 
 export default function InputPage4({ onPrev, dataCust, dataPage2, dataPage3, setSavedStat }: InputProps) {

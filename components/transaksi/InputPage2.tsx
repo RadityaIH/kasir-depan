@@ -5,11 +5,12 @@ import Select from 'react-select'
 import React from "react";
 import { getCookie } from "cookies-next";
 import Fail from "../fail";
+import ProductInput from "./productInput";
 
 interface InputProps {
     onPrev: () => void;
     onNext: () => void;
-    dataPage2: { sales: string, jadwal_kirim: string, id_produk: number, kode_produk: string, nama_produk: string, qty: number, harga: number, remarks: string}
+    dataPage2: { sales: string, jadwal_kirim: string, produkPage2: ProductChosen[], total_harga: number};
     setDataPage2: (data: any) => void;
 }
 
@@ -18,13 +19,23 @@ interface OptionType {
     label: string;
 }
 
-interface Product {
+interface ProductResponse {
     id_produk: number;
     kode_produk: string;
     nama_produk: string;
     stok: number;
     deskripsi: string;
     harga: number;
+}
+
+interface ProductChosen {
+    idx: number
+    id_produk: number;
+    kode_produk: string;
+    nama_produk: string;
+    qty: number;
+    harga: number;
+    remarks: string;
 }
 
 const token = getCookie("token");
@@ -79,30 +90,8 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
         setDateSQL(tanggal);
     };
 
-    // const [products, setProducts] = useState([{ id: 1, selectedProduct: '', remarks: '' }]);
-
-    // const handleAddProduct = () => {
-    //     const newProductId = products.length + 1;
-    //     setProducts([...products, { id: newProductId, selectedProduct: '', remarks: '' }]);
-    // };
-
-    // const handleRemoveProduct = (productId: number) => {
-    //     const updatedProducts = products.filter(product => product.id !== productId);
-    //     setProducts(updatedProducts);
-    // };
-
-    // const handleChangeProduct = (selectedOption: OptionType | null, productId: number) => {
-    //     if (selectedOption) {
-    //         const updatedProducts = products.map(product =>
-    //             product.id === productId ? { ...product, selectedProduct: selectedOption.value } : product
-    //         );
-    //         setProducts(updatedProducts);
-    //     }
-    // };
-
-
     //PRODUCTS
-    const [resProduct, setResProduct] = useState<{ products: Product[] }>({ products: [] });
+    const [resProduct, setResProduct] = useState<{ products: ProductResponse[] }>({ products: [] });
     const [loading, setLoading] = useState(true)
     useEffect(() => {
         fetch('https://gudang-back-end.vercel.app/products')
@@ -117,12 +106,12 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
             })
     }, [])
 
-    const [dataProduct, setDataProduct] = useState<Product[]>([]);
+    const [dataProduct, setDataProduct] = useState<ProductResponse[]>([]);
     useEffect(() => {
         setDataProduct(resProduct.products);
     }, [resProduct]);
 
-    const productOptions: OptionType[] = dataProduct ? [...dataProduct.map((product: Product) => ({
+    const productOptions: OptionType[] = dataProduct ? [...dataProduct.map((product: ProductResponse) => ({
         value: product.id_produk.toString(),
         label: `${product.kode_produk} - ${product.nama_produk}`
     }))] : [];
@@ -131,28 +120,7 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
     const [kode_produk, setKodeProduk] = useState("");
     const [harga, setHarga] = useState(0);
     const [stok, setStok] = useState(0);
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-        }).format(value);
-    };
-    const handleChangeProduct = (selectedOption: OptionType | null) => {
-        if (selectedOption) {
-            setSelectedProduct(selectedOption);
-            const selectedProductData = dataProduct.find((product: Product) => product.id_produk.toString() === selectedOption.value);
-            if (selectedProductData) {
-                setNamaProduk(selectedProductData.nama_produk);
-                setKodeProduk(selectedProductData.kode_produk);
-                setHarga(selectedProductData.harga);
-                setStok(selectedProductData.stok)
-            } else {
-                setNamaProduk("");
-                setKodeProduk("");
-                setHarga(0);
-            }
-        }
-    }
+
     const [qty, setQty] = useState<string>('');
     const [OOS, setOOS] = useState(false);
     const [ready, setReady] = useState(false);
@@ -181,18 +149,26 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
         setDataPage2({
             sales: selectedSales.label,
             jadwal_kirim: dateSQL,
-            id_produk: parseInt(selectedProduct.value),
-            kode_produk: kode_produk,
-            nama_produk: nama_produk,
-            qty: parseInt(qty),
-            harga: harga,
-            remarks: remarks
         })
-        if (direction === 'left'){
+        setDataPage2({
+            sales: selectedSales.label,
+            jadwal_kirim: dateSQL,
+            produkPage2: products,
+            total_harga: total_harga
+            // id_produk: mixId_Product,
+            // kode_produk: mixKode_Product,
+            // nama_produk: mixNama_Product,
+            // qty: mixQty,
+            // harga: mixHarga,
+            // remarks: mixRemarks,
+            // total_harga: total_harga
+        })
+        console.log(dataPage2)
+        if (direction === 'left') {
             onPrev()
             return;
         }
-        if (selectedProduct.value === '0' || qty === '' || parseInt(qty) === 0 || dateSQL === '' || selectedSales.value === '0') {
+        if (dateSQL === '' || selectedSales.value === '0') {
             // console.log(selectedProduct.value === '0', qty === '', dateSQL === '', selectedSales.value === '0', OOS)
             setMovePage(false);
             setNotFilled(true);
@@ -200,13 +176,13 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
             return;
         }
         const qtyInt = parseInt(qty);
-        if (qtyInt > stok){
+        if (qtyInt > stok) {
             setMovePage(false);
             setNotFilled(false);
             setAlertOOSShow(true);
             return;
         }
-        if (direction === 'right'){
+        if (direction === 'right') {
             onNext()
         }
         setMovePage(true);
@@ -219,21 +195,62 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
         if (existingSalesOption) {
             setSelectedSales(existingSalesOption);
         }
-        const existingProductOption = productOptions.find((option) => option.value === dataPage2.id_produk.toString());
-        if (existingProductOption) {
-            setSelectedProduct(existingProductOption);
-        }
-        if (dataPage2.qty !== 0) {
-            setQty(dataPage2.qty.toString());
-        }
-        setStok(dataProduct.find((product: Product) => product.id_produk === dataPage2.id_produk)?.stok || 0);
-        setRemarks(dataPage2.remarks);
         setDateSQL(dataPage2.jadwal_kirim);
-        setNamaProduk(dataPage2.nama_produk);
-        setKodeProduk(dataPage2.kode_produk);
-        setHarga(dataPage2.harga);
+        // const existingProductOption = productOptions.find((option) => option.value === dataPage2.id_produk.toString());
+        // if (existingProductOption) {
+        //     setSelectedProduct(existingProductOption);
+        // }
+        // if (dataPage2.qty !== 0) {
+        //     setQty(dataPage2.qty.toString());
+        // }
+        // setStok(dataProduct.find((product: ProductResponse) => product.id_produk === dataPage2.id_produk)?.stok || 0);
+        // setRemarks(dataPage2.remarks);
+        // setNamaProduk(dataPage2.nama_produk);
+        // setKodeProduk(dataPage2.kode_produk);
+        // setHarga(dataPage2.harga);
+        
 
     }, [dataPage2, resProduct, resSales])
+
+    const [products, setProducts] = useState<ProductChosen[]>([]);
+    const [index, setIndex] = useState(0)
+
+    const handleAddProduct = () => {
+        setIndex(index + 1)
+        setProducts([...products, { idx: index, id_produk: 0, kode_produk: '', nama_produk: '', qty: 0, harga: 0, remarks: '' }]);
+    }
+
+    const handleDeleteProduct = (idx: number) => {
+
+        const updatedProducts = [...products];
+        updatedProducts.splice(idx, 1);
+
+        updatedProducts.forEach((product, index) => {
+            product.idx = index;
+        });
+        setIndex(index - 1)
+
+        setProducts(updatedProducts);
+    }
+
+    const [total_harga, setTotalHarga] = useState<number>(0)
+    useEffect(() => {
+        const totalHarga = products.reduce((acc, product) => acc + (product.qty * product.harga), 0);
+        setTotalHarga(totalHarga);
+    }, [products])
+
+    const handleUpdateProduct = (productData: ProductChosen) => {
+        const existingProductIndex = products.findIndex(product => product.idx === productData.idx);
+
+        if (existingProductIndex !== -1) {
+            const updatedProducts = [...products];
+            updatedProducts[existingProductIndex] = productData;
+            setProducts(updatedProducts);
+        } else {
+            setProducts([...products, productData]);
+        }
+    };
+
     return (
         <>
             <Progress value={33} placeholder="" className="mb-3" color="red"></Progress>
@@ -264,164 +281,47 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
                         </div>
                     </div>
 
-                    {/* {products.map((product) => */}
-                    {/* <div key={product.id} className="p-3 border-4 border-dashed mt-7 rounded-lg"> */}
-                    <div className="p-3 border border-dashed mt-7 rounded-lg bg-gray-50">
-                        <Typography variant="h6" className="ml-1">Produk 1</Typography>
-                        {alertOOSShow && <Fail Title="Stok Tidak Mencukupi!" Caption={``} />}
-                        <div className="flex ml-1 mb-1 mt-4">
-                            <Typography variant="paragraph">Pilih Produk</Typography>
-                        </div>
-                        <div className="ml-1">
-                            <Select
-                                id="pilih_produk"
-                                name="pilih_produk"
-                                // value={product.selectedProduct}
-                                value={selectedProduct}
-                                // onChange={(selectedOption) => handleChangeProduct(selectedOption, product.id)}
-                                onChange={handleChangeProduct}
-                                options={productOptions}
-                                className="w-full bg-gray-50"
-                            />
-                        </div>
+                    {products.map((product, idx) =>
+                        <>
+                            <ProductInput
+                                key={idx}
+                                dataProduct={dataProduct}
+                                productChosen={products[idx]}
+                                handleDeleteProduct={handleDeleteProduct}
+                                onUpdateProduct={handleUpdateProduct}
+                                idx={idx} />
+                        </>
+                    )}
 
-                        <div className="ml-1 mb-1 mt-5">
-                            <Typography variant="paragraph">Nama Produk</Typography>
-                        </div>
-                        <div className="ml-1">
-                            <Input
-                                id="nama_produk"
-                                name="nama_produk"
-                                crossOrigin=""
-                                label="Nama Produk"
-                                className="bg-gray-50"
-                                value={nama_produk}
-                                disabled></Input>
-                        </div>
-
-                        <div className="flex gap-10">
-                            <div className="ml-1 mb-1 mt-5 w-1/2">
-                                <Typography variant="paragraph">Kode Produk</Typography>
-                                <Input
-                                    id="kode_produk"
-                                    name="kode_produk"
-                                    crossOrigin=""
-                                    label="Kode Produk"
-                                    className="bg-gray-50"
-                                    value={kode_produk}
-                                    disabled></Input>
-                            </div>
-
-                            <div className="mb-1 mt-5 w-1/2">
-                                <Typography variant="paragraph">Harga</Typography>
-                                <Input
-                                    id="harga"
-                                    name="harga"
-                                    crossOrigin=""
-                                    label="Harga"
-                                    className="bg-gray-50"
-                                    value={harga && formatCurrency(harga * (1.11 / 0.7))}
-                                    disabled></Input>
-                            </div>
-
-                            <div className="mr-1 mb-1 mt-5 w-1/2">
-                                <Typography variant="paragraph">Quantity</Typography>
-                                <Input
-                                    id="qty"
-                                    name="qty"
-                                    crossOrigin=""
-                                    className="bg-gray-50"
-                                    type="number"
-                                    value={qty}
-                                    // onChange={(e) => setQty(e.target.value)}
-                                    onChange={(e) => checkQty(e.target.value)}
-                                    label="Jumlah Produk"></Input>
-                                {ready &&
-                                    <Typography
-                                        variant="small"
-                                        color="green"
-                                        className="mt-2 flex items-center gap-1 font-normal">
-                                        Barang Tersedia!
-                                    </Typography>
-                                }
-                                {OOS &&
-                                    <Typography
-                                        variant="small"
-                                        color="red"
-                                        className="mt-2 flex items-center gap-1 font-normal">
-                                        Stok Tidak Mencukpi! Stok saat ini: {stok}
-                                    </Typography>
-                                }
-                            </div>
-                        </div>
-
-                        <div className="ml-1 mb-1 mt-3">
-                            <Typography variant="paragraph">Remarks</Typography>
-                        </div>
-                        <div className="ml-1">
-                            <Textarea
-                                id="remarks"
-                                name="remarks"
-                                value={remarks}
-                                onChange={(e) => setRemarks(e.target.value)}
-                                label="Keterangan (Optional)"
-                                className="bg-gray-50"></Textarea>
-                        </div>
-
-                        {/* <div className="justify-center flex">
-                        {products.length > 1 && (
-                            <button
-                                className="ml-1 mt-3 bg-red-500 rounded-full p-2"
-                                onClick={() => handleRemoveProduct(product.id)}
-                                type="button"
+                    <div className="justify-center flex">
+                        <button className="ml-1 mt-3 p-1 rounded-full"
+                            onClick={handleAddProduct}
+                            type="button">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                className="w-6"
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
+                                <title />
+                                <g
                                     fill="none"
-                                    viewBox="0 0 24 24"
-                                    className="w-6 h-6"
+                                    stroke="#000"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    data-name="add"
                                 >
-                                    <path
-                                        stroke="#FFF"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M10 11v6M14 11v6M4 7h16M6 7h12v11a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3V7ZM9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2H9V5Z"
-                                    />
-                                </svg>
-                            </button>
-                        )}
-                    </div> */}
+                                    <path d="M12 19V5M5 12h14" />
+                                </g>
+                            </svg>
+                        </button>
                     </div>
-                    {/* )} */}
-
-                    {/* <div className="justify-center flex">
-                <button className="ml-1 mt-3 bg-black p-1 rounded-full" onClick={handleAddProduct} type="button">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        className="w-8 h-8"
-                    >
-                        <title />
-                        <g
-                            fill="none"
-                            stroke="#FFF"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            data-name="add"
-                        >
-                            <path d="M12 19V5M5 12h14" />
-                        </g>
-                    </svg>
-                </button>
-            </div> */}
                 </>}
             <div className="justify-between flex">
                 <Button
                     className="mt-5 ml-1 bg-gray-100 border border-blue-500"
                     onClick={() => {
-                        handleSave('left'); 
+                        handleSave('left');
                         // onPrev();
                     }}
                     placeholder="">
@@ -431,7 +331,7 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
                 <Button
                     className="bg-blue-500 mt-5"
                     onClick={() => {
-                        handleSave('right'); 
+                        handleSave('right');
                         // if (movePage) {
                         //     onNext();
                         // }
