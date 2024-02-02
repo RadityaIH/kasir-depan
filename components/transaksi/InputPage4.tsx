@@ -1,4 +1,4 @@
-import { Button, Input, Progress, Textarea, Typography } from "@material-tailwind/react";
+import { Button, Card, Input, Progress, Textarea, Typography } from "@material-tailwind/react";
 import DateInput from "./dateInput";
 import { useState } from "react";
 import Select from 'react-select'
@@ -9,9 +9,10 @@ interface InputProps {
     dataCust: { nama: string, no_telp: string, alamat: string }
     dataPage2: { sales: string, jadwal_kirim: string, id_produk: number, kode_produk: string, nama_produk: string, qty: number, harga: number, remarks: string }
     dataPage3: { total_harga: number, metodeBayar1Mix: string, metodeBayar2Mix: string, downPayment1: number, downPayment2: number, balance_due: number }
+    setSavedStat: (data: boolean) => void;
 }
 
-export default function InputPage4({ onPrev, dataCust, dataPage2, dataPage3 }: InputProps) {
+export default function InputPage4({ onPrev, dataCust, dataPage2, dataPage3, setSavedStat }: InputProps) {
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat("id-ID", {
             style: "currency",
@@ -22,6 +23,7 @@ export default function InputPage4({ onPrev, dataCust, dataPage2, dataPage3 }: I
     const [saved, setSaved] = useState(false);
     const handleSubmit = () => {
         setSaved(true);
+        setSavedStat(true)
         window.scroll({
             top: 0,
             left: 0,
@@ -35,7 +37,7 @@ export default function InputPage4({ onPrev, dataCust, dataPage2, dataPage3 }: I
             {saved &&
                 <div className="flex justify-between gap-5 mt-10">
                     <div className="w-full">
-                        <Success Title="Berhasil!" Caption="Transaksi berhasil disimpan" />
+                        <Success Title="Berhasil!" Caption="Transaksi berhasil disimpan. Periksa halaman &ldquo;Penjualan&rdquo;" />
                     </div>
                     <div className="cursor-pointer hover:bg-gray-200 p-1 rounded-lg" onClick={(e) => setSaved(false)}>
                         <svg
@@ -53,9 +55,9 @@ export default function InputPage4({ onPrev, dataCust, dataPage2, dataPage3 }: I
                     </div>
                 </div>
             }
-            <Typography variant="h5" className="my-5 text-center">Rekap</Typography>
+            <Typography variant="h5" className="my-1 text-center">{saved ? "" : "Konfirmasi"} Sales Order {saved ? `SM-033141` : ""}</Typography>
 
-            <Typography variant="h6" className="my-5 text-center">Data Customer</Typography>
+            {/* <Typography variant="h6" className="my-1 text-center">Data Customer</Typography> */}
             <div className="ml-1 mt-5 flex items-center">
                 <div className="w-1/4">
                     <Typography variant="paragraph">Nama</Typography>
@@ -94,82 +96,98 @@ export default function InputPage4({ onPrev, dataCust, dataPage2, dataPage3 }: I
             </div>
 
 
-            <Typography variant="h6" className="my-5 text-center">Data Produk</Typography>
-            <div className="ml-1 mt-5 flex items-center">
-                <div className="w-1/4">
-                    <Typography variant="paragraph">Nama Produk</Typography>
-                </div>
-                <Input
-                    id="nama_produk"
-                    name="nama_produk"
-                    crossOrigin=""
-                    className="bg-gray-50"
-                    value={dataPage2.nama_produk}
-                    disabled></Input>
-            </div>
+            <Typography variant="h6" className="my-1 mt-3 text-center">Produk</Typography>
             <div className="ml-1 mt-3 flex items-center">
                 <div className="w-1/4">
-                    <Typography variant="paragraph">Kode Produk</Typography>
+                    <Typography variant="paragraph">Sales</Typography>
                 </div>
                 <Input
-                    id="kode_produk"
-                    name="kode_produk"
+                    id="sales"
+                    name="sales"
                     crossOrigin=""
                     className="bg-gray-50"
-                    value={dataPage2.kode_produk}
+                    value={dataPage2.sales}
                     disabled></Input>
             </div>
-            <div className="ml-1 mt-3 flex items-center">
+            <div className="ml-1 mt-3 my-5 flex items-center">
                 <div className="w-1/4">
-                    <Typography variant="paragraph">Harga</Typography>
+                    <Typography variant="paragraph">Tanggal Pengantaran</Typography>
                 </div>
                 <Input
-                    id="harga"
-                    name="harga"
-                    crossOrigin=""
-                    className="bg-gray-50"
-                    value={formatCurrency(dataPage2.harga)}
-                    disabled></Input>
-            </div>
-            <div className="ml-1 mt-3 flex items-center">
-                <div className="w-1/4">
-                    <Typography variant="paragraph">Quantity</Typography>
-                </div>
-                <Input
-                    id="qty"
-                    name="qty"
-                    crossOrigin=""
-                    className="bg-gray-50"
-                    value={dataPage2.qty}
-                    disabled></Input>
-            </div>
-            <div className="ml-1 mt-3 flex items-center">
-                <div className="w-1/4">
-                    <Typography variant="paragraph">Estimasi Tanggal Pengantaran</Typography>
-                </div>
-                <Input
-                    id="color"
-                    name="color"
+                    id="tgl_antar"
+                    name="tgl_antar"
                     crossOrigin=""
                     className="bg-gray-50"
                     value={dataPage2.jadwal_kirim}
                     disabled></Input>
             </div>
-            <div className="ml-1 mt-3 flex items-center">
-                <div className="w-1/4">
-                    <Typography variant="paragraph">Remarks</Typography>
-                </div>
-                <Textarea
-                    id="remarks"
-                    name="remarks"
-                    className="bg-gray-50"
-                    value={dataPage2.remarks ? dataPage2.remarks : "-"}
-                    disabled></Textarea>
+            <div className="flex flex-wrap gap-7 justify-center">
+                <Card placeholder="" className="p-3 w-2/5 border-solid border-2 bg-gray-50">
+                    <div className="ml-1 mt-3 flex items-center">
+                        <div className="w-1/2">
+                            <Typography variant="paragraph">Nama</Typography>
+                        </div>
+                        <Input
+                            id="nama_produk"
+                            name="nama_produk"
+                            crossOrigin=""
+                            className="bg-gray-50"
+                            value={dataPage2.nama_produk}
+                            disabled></Input>
+                    </div>
+                    <div className="ml-1 mt-3 flex items-center">
+                        <div className="w-1/2">
+                            <Typography variant="paragraph">Kode</Typography>
+                        </div>
+                        <Input
+                            id="kode_produk"
+                            name="kode_produk"
+                            crossOrigin=""
+                            className="bg-gray-50"
+                            value={dataPage2.kode_produk}
+                            disabled></Input>
+                    </div>
+                    <div className="ml-1 mt-3 flex items-center">
+                        <div className="w-1/2">
+                            <Typography variant="paragraph">Harga</Typography>
+                        </div>
+                        <Input
+                            id="harga"
+                            name="harga"
+                            crossOrigin=""
+                            className="bg-gray-50"
+                            value={formatCurrency(dataPage2.harga)}
+                            disabled></Input>
+                    </div>
+                    <div className="ml-1 mt-3 flex items-center">
+                        <div className="w-1/2">
+                            <Typography variant="paragraph">Quantity</Typography>
+                        </div>
+                        <Input
+                            id="qty"
+                            name="qty"
+                            crossOrigin=""
+                            className="bg-gray-50"
+                            value={dataPage2.qty}
+                            disabled></Input>
+                    </div>
+                    <div className="ml-1 mt-3 flex items-center">
+                        <div className="w-1/2">
+                            <Typography variant="paragraph">Remarks</Typography>
+                        </div>
+                        <Textarea
+                            id="remarks"
+                            name="remarks"
+                            className="bg-gray-50"
+                            value={dataPage2.remarks ? dataPage2.remarks : "-"}
+                            disabled></Textarea>
+                    </div>
+                </Card>
             </div>
 
 
-            <Typography variant="h6" className="my-5 text-center">Data Pembayaran</Typography>
-            <div className="ml-1 mt-5 flex items-center">
+            <Typography variant="h6" className="my-6 text-center">Data Pembayaran</Typography>
+            <div className="ml-1 flex items-center">
                 <div className="w-1/4">
                     <Typography variant="paragraph">Total Harga</Typography>
                 </div>

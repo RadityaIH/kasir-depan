@@ -6,6 +6,7 @@ import InputPage2 from "@/components/transaksi/InputPage2";
 import InputPage3 from "@/components/transaksi/InputPage3";
 import { useEffect, useState } from "react";
 import InputPage4 from "@/components/transaksi/InputPage4";
+import {useRouter} from "next/router";
 
 export default function Transaksi() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -22,12 +23,35 @@ export default function Transaksi() {
     const [dataPage2, setDataPage2] = useState({ sales: "", jadwal_kirim: "", id_produk: 0, kode_produk: "", nama_produk: "", qty: 0, harga: 0, remarks: "" });
     const [dataPage3, setDataPage3] = useState({ total_harga: 0, metodeBayar1Mix: "", metodeBayar2Mix: "", downPayment1: 0, downPayment2: 0, balance_due: 0 })
 
-    if (currentPage !== 1) {
-        window.onbeforeunload = function () {
-            return "Data will be lost if you leave the page, are you sure?";
+    const router = useRouter();
+    const [savedStat, setSavedStat] = useState(false);
+    useEffect(() => {
+        console.log(savedStat)
+        const handleBeforeUnload = (event: any) => {
+            if (currentPage !== 1 && !savedStat) {
+                event.preventDefault();
+                event.returnValue = "Data yang sedang dimasukkan akan hilang jika anda keluar dari halaman ini, yakin?";
+            }
         };
-    }
 
+        const handleRouteChangeStart = (url: string, { shallow }: { shallow: boolean }) => {
+            if (currentPage !== 1 && !savedStat) {
+                if (!window.confirm("Data yang sedang dimasukkan akan hilang jika anda keluar dari halaman ini, yakin?")) {
+                    router.events.emit("routeChangeError");
+                    throw 'routeChange aborted.';
+                }
+            }
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        router.events.on("routeChangeStart", handleRouteChangeStart);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+            router.events.off("routeChangeStart", handleRouteChangeStart);
+        };
+    }, [currentPage, router, savedStat]);
+    
     return (
         <>
             <Head>
@@ -46,7 +70,7 @@ export default function Transaksi() {
                             total_harga={dataPage2.harga * (1.11 / 0.7) * dataPage2.qty}
                             dataPage3={dataPage3}
                             setDataPage3={setDataPage3} />}
-                        {currentPage === 4 && <InputPage4 onPrev={handlePrev} dataCust={dataCust} dataPage2={dataPage2} dataPage3={dataPage3} />}
+                        {currentPage === 4 && <InputPage4 onPrev={handlePrev} dataCust={dataCust} dataPage2={dataPage2} dataPage3={dataPage3} setSavedStat={setSavedStat}/>}
                     </Card>
                 </div>
             </Card>
