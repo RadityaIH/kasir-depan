@@ -31,6 +31,7 @@ interface ProductChosen {
     nama_produk: string;
     qty: number;
     harga: number;
+    stok: number;
     remarks: string;
 }
 
@@ -72,7 +73,7 @@ export default function ProductInput({ dataProduct, productChosen, handleDeleteP
     const checkQty = (qty: string) => {
         setQty(qty)
         const qtyInt = parseInt(qty);
-        if (qtyInt > stok) {
+        if (qtyInt > stok || qtyInt <= 0) {
             setOOS(true)
             setReady(false)
         } else {
@@ -86,7 +87,7 @@ export default function ProductInput({ dataProduct, productChosen, handleDeleteP
     const [remarks, setRemarks] = useState("");
 
     useEffect(() => {
-        if (selectedProduct.value === '0' || qty === '' || parseInt(qty) === 0) {
+        if (selectedProduct.value === '0') {
             return
         } else {
             onUpdateProduct({
@@ -95,16 +96,21 @@ export default function ProductInput({ dataProduct, productChosen, handleDeleteP
                 kode_produk: kode_produk,
                 nama_produk: nama_produk,
                 qty: parseInt(qty),
+                stok: stok,
                 harga: harga,
                 remarks: remarks
             })
         }
-    }, [selectedProduct, kode_produk, nama_produk, qty, harga, remarks])
+    }, [selectedProduct, kode_produk, nama_produk, qty, harga, remarks, stok])
 
     useEffect(() => {
         if (productChosen.idx === idx) {
             setSelectedProduct({ value: productChosen.id_produk.toString(), label: `${productChosen.kode_produk} - ${productChosen.nama_produk}` })
+            setNamaProduk(productChosen.nama_produk)
+            setKodeProduk(productChosen.kode_produk)
+            setHarga(productChosen.harga)
             setQty(productChosen.qty.toString())
+            setStok(productChosen.stok)
             setRemarks(productChosen.remarks)
         }
     }, [])
@@ -182,7 +188,7 @@ export default function ProductInput({ dataProduct, productChosen, handleDeleteP
                         crossOrigin=""
                         label="Harga"
                         className="bg-gray-50"
-                        value={harga && formatCurrency(harga * (1.11 / 0.7))}
+                        value={harga && formatCurrency(harga)}
                         disabled></Input>
                 </div>
 

@@ -132,67 +132,76 @@ export default function InputPage4({ onPrev, dataCust, dataPage2, dataPage3, set
                     disabled></Input>
             </div>
             <div className="flex flex-wrap gap-7 justify-center">
-                <Card placeholder="" className="p-3 w-2/5 border-solid border-2 bg-gray-50">
-                    <div className="ml-1 mt-3 flex items-center">
-                        <div className="w-1/2">
-                            <Typography variant="paragraph">Nama</Typography>
+                {dataPage2.produkPage2 && dataPage2.produkPage2.map((produk, idx) => (
+                    <Card key={idx} placeholder="" className="p-3 w-2/5 border-solid border-2 bg-gray-50">
+                        <Typography variant="h6" className="my-1 mt-3 text-center">Produk {idx+1}</Typography>
+
+                        <div className="ml-1 mt-3 flex items-center">
+                            <div className="w-1/2">
+                                <Typography variant="paragraph">Nama</Typography>
+                            </div>
+                            <Input
+                                id="nama_produk"
+                                name="nama_produk"
+                                crossOrigin=""
+                                className="bg-gray-50"
+                                value={produk.nama_produk}
+                                disabled
+                            />
                         </div>
-                        <Input
-                            id="nama_produk"
-                            name="nama_produk"
-                            crossOrigin=""
-                            className="bg-gray-50"
-                            value={dataPage2.nama_produk}
-                            disabled></Input>
-                    </div>
-                    <div className="ml-1 mt-3 flex items-center">
-                        <div className="w-1/2">
-                            <Typography variant="paragraph">Kode</Typography>
+                        <div className="ml-1 mt-3 flex items-center">
+                            <div className="w-1/2">
+                                <Typography variant="paragraph">Kode</Typography>
+                            </div>
+                            <Input
+                                id="kode_produk"
+                                name="kode_produk"
+                                crossOrigin=""
+                                className="bg-gray-50"
+                                value={produk.kode_produk}
+                                disabled
+                            />
                         </div>
-                        <Input
-                            id="kode_produk"
-                            name="kode_produk"
-                            crossOrigin=""
-                            className="bg-gray-50"
-                            value={dataPage2.kode_produk}
-                            disabled></Input>
-                    </div>
-                    <div className="ml-1 mt-3 flex items-center">
-                        <div className="w-1/2">
-                            <Typography variant="paragraph">Harga</Typography>
+                        <div className="ml-1 mt-3 flex items-center">
+                            <div className="w-1/2">
+                                <Typography variant="paragraph">Harga</Typography>
+                            </div>
+                            <Input
+                                id="harga"
+                                name="harga"
+                                crossOrigin=""
+                                className="bg-gray-50"
+                                value={formatCurrency(produk.harga)}
+                                disabled
+                            />
                         </div>
-                        <Input
-                            id="harga"
-                            name="harga"
-                            crossOrigin=""
-                            className="bg-gray-50"
-                            value={formatCurrency(dataPage2.harga)}
-                            disabled></Input>
-                    </div>
-                    <div className="ml-1 mt-3 flex items-center">
-                        <div className="w-1/2">
-                            <Typography variant="paragraph">Quantity</Typography>
+                        <div className="ml-1 mt-3 flex items-center">
+                            <div className="w-1/2">
+                                <Typography variant="paragraph">Quantity</Typography>
+                            </div>
+                            <Input
+                                id="qty"
+                                name="qty"
+                                crossOrigin=""
+                                className="bg-gray-50"
+                                value={produk.qty}
+                                disabled
+                            />
                         </div>
-                        <Input
-                            id="qty"
-                            name="qty"
-                            crossOrigin=""
-                            className="bg-gray-50"
-                            value={dataPage2.qty}
-                            disabled></Input>
-                    </div>
-                    <div className="ml-1 mt-3 flex items-center">
-                        <div className="w-1/2">
-                            <Typography variant="paragraph">Remarks</Typography>
+                        <div className="ml-1 mt-3 flex items-center">
+                            <div className="w-1/2">
+                                <Typography variant="paragraph">Remarks</Typography>
+                            </div>
+                            <Textarea
+                                id="remarks"
+                                name="remarks"
+                                className="bg-gray-50"
+                                value={dataPage2.produkPage2[idx].remarks ? produk.remarks : "-"}
+                                disabled
+                            />
                         </div>
-                        <Textarea
-                            id="remarks"
-                            name="remarks"
-                            className="bg-gray-50"
-                            value={dataPage2.remarks ? dataPage2.remarks : "-"}
-                            disabled></Textarea>
-                    </div>
-                </Card>
+                    </Card>
+                ))}
             </div>
 
 

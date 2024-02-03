@@ -66,6 +66,14 @@ export default function InputPage3({ onPrev, onNext, total_harga, dataPage3, set
         setBank2("");
     }
 
+    const handleLunas = () => {
+        setDownPayment1(parseFloat(total_harga.toFixed(2)));
+        setDownPayment2(0);
+        setMetodePembayaran2("");
+        setBank1("");
+        setBank2("");
+    }
+
     const balanceDue = total_harga - (downPayment1 || 0) - (downPayment2 || 0);
     const formattedBalanceDue = balanceDue >= 0 ? formatCurrency(balanceDue) : formatCurrency(0);
 
@@ -168,6 +176,10 @@ export default function InputPage3({ onPrev, onNext, total_harga, dataPage3, set
                             value={downPayment1}
                             onChange={(e) => handleDP1(parseInt(e.target.value))}
                             label="Contoh: 1500000"></Input>
+                    </div>
+
+                    <div className="flex justify-end mt-5">
+                        <Button color="red" placeholder="" onClick={handleLunas}>Lunas</Button>
                     </div>
                 </div>
 

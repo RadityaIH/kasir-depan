@@ -5,7 +5,7 @@ import {
   PopoverHandler,
   PopoverContent,
 } from "@material-tailwind/react";
-import { format } from "date-fns";
+import { format, isBefore, isToday } from "date-fns";
 import { id } from "date-fns/locale";
 import { DayPicker } from "react-day-picker";
 import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
@@ -14,7 +14,6 @@ interface InputProps {
     dateSQL: string;
     setDateSQL: (tanggal: string) => void;
 }
-
 
 export default function DateInput({dateSQL, setDateSQL}: InputProps) {
     const [date, setDate] = React.useState<Date>();
@@ -54,6 +53,7 @@ export default function DateInput({dateSQL, setDateSQL}: InputProps) {
                         selected={date}
                         onSelect={setDate}
                         showOutsideDays
+                        disabled={(date: Date) => isBefore(date, new Date())}
                         className="border-0"
                         classNames={{
                             caption: "flex justify-center py-2 mb-4 relative items-center",

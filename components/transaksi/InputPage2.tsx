@@ -10,7 +10,7 @@ import ProductInput from "./productInput";
 interface InputProps {
     onPrev: () => void;
     onNext: () => void;
-    dataPage2: { sales: string, jadwal_kirim: string, produkPage2: ProductChosen[], total_harga: number};
+    dataPage2: { sales: string, jadwal_kirim: string, produkPage2: ProductChosen[], total_harga: number };
     setDataPage2: (data: any) => void;
 }
 
@@ -35,6 +35,7 @@ interface ProductChosen {
     nama_produk: string;
     qty: number;
     harga: number;
+    stok: number;
     remarks: string;
 }
 
@@ -109,12 +110,20 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
     const [dataProduct, setDataProduct] = useState<ProductResponse[]>([]);
     useEffect(() => {
         setDataProduct(resProduct.products);
+        console.log(dataProduct)
     }, [resProduct]);
+
+    useEffect(() => {
+        dataProduct.forEach((product) => {
+            product.harga = (product.harga * (1.11/0.7));
+        });
+    }, [dataProduct])
 
     const productOptions: OptionType[] = dataProduct ? [...dataProduct.map((product: ProductResponse) => ({
         value: product.id_produk.toString(),
         label: `${product.kode_produk} - ${product.nama_produk}`
     }))] : [];
+
     const [selectedProduct, setSelectedProduct] = useState({ value: '0', label: 'Pilih Produk' });
     const [nama_produk, setNamaProduk] = useState("");
     const [kode_produk, setKodeProduk] = useState("");
@@ -142,52 +151,38 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
 
     //HANDLE NEXT
     const [notFilled, setNotFilled] = useState(false);
-    const [movePage, setMovePage] = useState(false);
-    const [alertOOSShow, setAlertOOSShow] = useState(false);
+    const [alertOOS, setAlertOOS] = useState(false);
     const handleSave = (direction: string) => {
-        setMovePage(true);
-        setDataPage2({
-            sales: selectedSales.label,
-            jadwal_kirim: dateSQL,
-        })
         setDataPage2({
             sales: selectedSales.label,
             jadwal_kirim: dateSQL,
             produkPage2: products,
             total_harga: total_harga
-            // id_produk: mixId_Product,
-            // kode_produk: mixKode_Product,
-            // nama_produk: mixNama_Product,
-            // qty: mixQty,
-            // harga: mixHarga,
-            // remarks: mixRemarks,
-            // total_harga: total_harga
         })
         console.log(dataPage2)
-        if (direction === 'left') {
+        if (direction === 'left') {``
             onPrev()
             return;
         }
-        if (dateSQL === '' || selectedSales.value === '0') {
+        if (dateSQL === '' 
+            || selectedSales.value === '0' 
+            || products.length === 0
+            || products.some(product => product.id_produk === 0 || product.qty === 0)) {
             // console.log(selectedProduct.value === '0', qty === '', dateSQL === '', selectedSales.value === '0', OOS)
-            setMovePage(false);
             setNotFilled(true);
-            setAlertOOSShow(false);
+            setAlertOOS(false);
             return;
         }
-        const qtyInt = parseInt(qty);
-        if (qtyInt > stok) {
-            setMovePage(false);
+        if (products.some(product => product.qty > product.stok)) {
+            setAlertOOS(true);
             setNotFilled(false);
-            setAlertOOSShow(true);
             return;
         }
         if (direction === 'right') {
             onNext()
         }
-        setMovePage(true);
         setNotFilled(false);
-        setAlertOOSShow(false);
+        setAlertOOS(false);
     }
 
     useEffect(() => {
@@ -196,47 +191,68 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
             setSelectedSales(existingSalesOption);
         }
         setDateSQL(dataPage2.jadwal_kirim);
-        // const existingProductOption = productOptions.find((option) => option.value === dataPage2.id_produk.toString());
-        // if (existingProductOption) {
-        //     setSelectedProduct(existingProductOption);
-        // }
-        // if (dataPage2.qty !== 0) {
-        //     setQty(dataPage2.qty.toString());
-        // }
-        // setStok(dataProduct.find((product: ProductResponse) => product.id_produk === dataPage2.id_produk)?.stok || 0);
-        // setRemarks(dataPage2.remarks);
-        // setNamaProduk(dataPage2.nama_produk);
-        // setKodeProduk(dataPage2.kode_produk);
-        // setHarga(dataPage2.harga);
-        
-
+        setProducts(dataPage2.produkPage2);
+        setIndex(getNextIndex())
     }, [dataPage2, resProduct, resSales])
 
     const [products, setProducts] = useState<ProductChosen[]>([]);
     const [index, setIndex] = useState(0)
 
+    const getNextIndex = () => {
+        if (products.length === 0) {
+            return 0; // Jika tidak ada produk, indeks dimulai dari 0
+        } else {
+            // Temukan indeks terbesar dan tambahkan satu
+            const maxIndex = Math.max(...products.map(product => product.idx));
+            return maxIndex + 1;
+        }
+    };
+
+    const [filteredDataProduct, setFilteredDataProduct] = useState<ProductResponse[]>([]);
+    useEffect(() => {
+        const fdp = dataProduct.filter(product => {
+            return !products.some(p => p.id_produk === product.id_produk);
+        });
+        setFilteredDataProduct(fdp);
+    }, [dataProduct, products])
+    // console.log(filteredDataProduct)
+
     const handleAddProduct = () => {
         setIndex(index + 1)
-        setProducts([...products, { idx: index, id_produk: 0, kode_produk: '', nama_produk: '', qty: 0, harga: 0, remarks: '' }]);
+        setProducts([
+            ...products,
+            {
+                idx: index, id_produk: 0, kode_produk: '', nama_produk: '', qty: 0, harga: 0, remarks: '', stok: 0
+            }]);
     }
 
     const handleDeleteProduct = (idx: number) => {
+        const delProductName = products.find(product => product.id_produk === idx)?.id_produk.toString();
+        const deletedProduct = dataProduct.find(product => product.id_produk.toString() === delProductName);
+        if (deletedProduct) {
+            setFilteredDataProduct([...filteredDataProduct, {
+                id_produk: deletedProduct.id_produk,
+                kode_produk: deletedProduct.kode_produk,
+                nama_produk: deletedProduct.nama_produk,
+                stok: deletedProduct.stok,
+                deskripsi: deletedProduct.deskripsi,
+                harga: deletedProduct.harga
+            }]);
+        }
 
-        const updatedProducts = [...products];
-        updatedProducts.splice(idx, 1);
-
+        const updatedProducts = products.filter(product => product.idx !== idx);
         updatedProducts.forEach((product, index) => {
             product.idx = index;
         });
-        setIndex(index - 1)
-
+        setIndex(getNextIndex())
         setProducts(updatedProducts);
     }
 
     const [total_harga, setTotalHarga] = useState<number>(0)
     useEffect(() => {
-        const totalHarga = products.reduce((acc, product) => acc + (product.qty * product.harga), 0);
+        const totalHarga = products.reduce((acc, product) => acc + (product.qty * (product.harga)), 0);
         setTotalHarga(totalHarga);
+        console.log(products)
     }, [products])
 
     const handleUpdateProduct = (productData: ProductChosen) => {
@@ -256,6 +272,7 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
             <Progress value={33} placeholder="" className="mb-3" color="red"></Progress>
             <Typography variant="h5" className="text-center">Data Produk</Typography>
             {notFilled && <Fail Title="Peringatan!" Caption={`Seluruh Kolom Harus Diisi!`} />}
+            {alertOOS && <Fail Title="Peringatan!" Caption={`Stok Produk Tidak Mencukupi`} />}
 
             {loading ?
                 <div className="flex justify-center items-center h-screen">
@@ -284,12 +301,12 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
                     {products.map((product, idx) =>
                         <>
                             <ProductInput
-                                key={idx}
-                                dataProduct={dataProduct}
-                                productChosen={products[idx]}
+                                key={product.id_produk}
+                                dataProduct={filteredDataProduct}
+                                productChosen={product}
                                 handleDeleteProduct={handleDeleteProduct}
                                 onUpdateProduct={handleUpdateProduct}
-                                idx={idx} />
+                                idx={product.idx} />
                         </>
                     )}
 
@@ -322,7 +339,6 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
                     className="mt-5 ml-1 bg-gray-100 border border-blue-500"
                     onClick={() => {
                         handleSave('left');
-                        // onPrev();
                     }}
                     placeholder="">
                     <p className="text-blue-500">Sebelumnya</p>
@@ -332,9 +348,6 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
                     className="bg-blue-500 mt-5"
                     onClick={() => {
                         handleSave('right');
-                        // if (movePage) {
-                        //     onNext();
-                        // }
                     }}
                     placeholder="">
                     Selanjutnya
