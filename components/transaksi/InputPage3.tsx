@@ -69,12 +69,21 @@ export default function InputPage3({ onPrev, onNext, total_harga, dataPage3, set
     const handleLunas = () => {
         setDownPayment1(parseFloat(total_harga.toFixed(2)));
         setDownPayment2(0);
+        setBalanceDue(0);
         setMetodePembayaran2("");
         setBank1("");
         setBank2("");
     }
 
-    const balanceDue = total_harga - (downPayment1 || 0) - (downPayment2 || 0);
+    const [balanceDue, setBalanceDue] = useState<number>(0);
+    useEffect(() => {
+        const bD = total_harga - (downPayment1 || 0) - (downPayment2 || 0);
+        if (bD > 0) {
+            setBalanceDue(bD);
+        } else {
+            setBalanceDue(0);
+        }
+    }, [downPayment1, downPayment2, total_harga])
     const formattedBalanceDue = balanceDue >= 0 ? formatCurrency(balanceDue) : formatCurrency(0);
 
     const [notFilled, setNotFilled] = useState(false);

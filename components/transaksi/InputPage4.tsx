@@ -3,11 +3,14 @@ import DateInput from "./dateInput";
 import { useState } from "react";
 import Select from 'react-select'
 import Success from "../success";
+import { getCookie } from "cookies-next";
+import axios from "axios";
+import Fail from "../fail";
 
 interface InputProps {
     onPrev: () => void;
     dataCust: { nama: string, no_telp: string, alamat: string }
-    dataPage2: { sales: string, jadwal_kirim: string, produkPage2: ProductChosen[], total_harga: number};
+    dataPage2: { salesId: number, sales: string, jadwal_kirim: string, produkPage2: ProductChosen[], total_harga: number};
     dataPage3: { total_harga: number, metodeBayar1Mix: string, metodeBayar2Mix: string, downPayment1: number, downPayment2: number, balance_due: number }
     setSavedStat: (data: boolean) => void;
 }
@@ -21,6 +24,7 @@ interface ProductChosen {
     harga: number;
     remarks: string;
 }
+const token = getCookie("token");
 
 export default function InputPage4({ onPrev, dataCust, dataPage2, dataPage3, setSavedStat }: InputProps) {
     const formatCurrency = (value: number) => {
@@ -30,17 +34,81 @@ export default function InputPage4({ onPrev, dataCust, dataPage2, dataPage3, set
         }).format(value);
     };
 
-    const [saved, setSaved] = useState(false);
-    const handleSubmit = () => {
-        setSaved(true);
-        setSavedStat(true)
-        window.scroll({
-            top: 0,
-            left: 0,
-            behavior: 'smooth'
-        });
-
+    function formatDate(dateString: string) {
+        const months = [
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        ];
+    
+        const date = new Date(dateString);
+        const day = date.getDate();
+        const monthIndex = date.getMonth();
+        const year = date.getFullYear();
+    
+        return `${day} ${months[monthIndex]} ${year}`;
     }
+
+    const [saved, setSaved] = useState(false);
+    const [error, setError] = useState(false);
+    const [id_SO, setId_SO] = useState("");
+    const handleSubmit = async (event: any) => {
+        event.preventDefault()
+
+        try {
+            const token = getCookie("token");
+
+            if (token) {
+                const response = await axios.post(`${process.env.BACKEND_API}/addSO`, {
+                    nama_cust: dataCust.nama,
+                    no_telp: dataCust.no_telp,
+                    alamat: dataCust.alamat,
+                    sales_id: dataPage2.salesId,
+                    jadwal_kirim: dataPage2.jadwal_kirim,
+                    produkPage2: dataPage2.produkPage2,
+                    total_harga: dataPage3.total_harga,
+                    metode_dp1: dataPage3.metodeBayar1Mix,
+                    total_dp1: dataPage3.downPayment1,
+                    metode_dp2: dataPage3.metodeBayar2Mix,
+                    total_dp2: dataPage3.downPayment2,
+                    balance_due: dataPage3.balance_due
+                }, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                });
+
+                if (response.status !== 200) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                setSaved(true);
+                setSavedStat(true)
+                setError(false);
+                setId_SO(response.data.id_SO);
+                window.scroll({
+                    top: 0,
+                    left: 0,
+                    behavior: 'smooth'
+                });
+            }
+        } catch (error: any) {
+            console.error('Fetch error');
+            setSaved(false)
+            setSavedStat(false)
+            setError(true);
+            window.scroll({
+                top: 0,
+                left: 0,
+                behavior: 'smooth'
+            });
+        }
+    }
+
+    // console.log("cust:", dataCust)
+    // console.log("page2:", dataPage2)
+    // console.log("page3:", dataPage3)
     return (
         <>
             <Progress value={100} placeholder="" className="mb-3" color="red"></Progress>
@@ -65,7 +133,8 @@ export default function InputPage4({ onPrev, dataCust, dataPage2, dataPage3, set
                     </div>
                 </div>
             }
-            <Typography variant="h5" className="my-1 text-center">{saved ? "" : "Konfirmasi"} Sales Order {saved ? `SM-033141` : ""}</Typography>
+            {error && <Fail Title="Gagal Menyimpan!" Caption="Terjadi kesalahan" />}
+            <Typography variant="h5" className="my-1 text-center">{saved ? "" : "Konfirmasi"} Sales Order {saved ? id_SO : ""}</Typography>
 
             {/* <Typography variant="h6" className="my-1 text-center">Data Customer</Typography> */}
             <div className="ml-1 mt-5 flex items-center">
@@ -128,7 +197,7 @@ export default function InputPage4({ onPrev, dataCust, dataPage2, dataPage3, set
                     name="tgl_antar"
                     crossOrigin=""
                     className="bg-gray-50"
-                    value={dataPage2.jadwal_kirim}
+                    value={formatDate(dataPage2.jadwal_kirim)}
                     disabled></Input>
             </div>
             <div className="flex flex-wrap gap-7 justify-center">

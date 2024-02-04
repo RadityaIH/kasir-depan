@@ -110,7 +110,6 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
     const [dataProduct, setDataProduct] = useState<ProductResponse[]>([]);
     useEffect(() => {
         setDataProduct(resProduct.products);
-        console.log(dataProduct)
     }, [resProduct]);
 
     useEffect(() => {
@@ -155,6 +154,7 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
     const handleSave = (direction: string) => {
         setDataPage2({
             sales: selectedSales.label,
+            salesId: selectedSales.value,
             jadwal_kirim: dateSQL,
             produkPage2: products,
             total_harga: total_harga
@@ -252,7 +252,6 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
     useEffect(() => {
         const totalHarga = products.reduce((acc, product) => acc + (product.qty * (product.harga)), 0);
         setTotalHarga(totalHarga);
-        console.log(products)
     }, [products])
 
     const handleUpdateProduct = (productData: ProductChosen) => {

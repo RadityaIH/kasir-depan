@@ -78,8 +78,8 @@ export default function Penjualan() {
         } else {
             // const filteredData = dataFetch.products.filter((row) => {
             const filteredData = resSO.filter((row: SOResponse) => {
-                console.log(row.nama_cust.toLowerCase().includes(value.toLowerCase()) || row.nama_produk.toLowerCase().includes(value.toLowerCase()))
-                return row.nama_cust.toLowerCase().includes(value.toLowerCase()) || row.nama_produk.toLowerCase().includes(value.toLowerCase());
+                console.log(row.id_SO.toLowerCase().includes(value.toLowerCase()) || row.nama_cust.toLowerCase().includes(value.toLowerCase()))
+                return row.id_SO.toLowerCase().includes(value.toLowerCase()) || row.nama_cust.toLowerCase().includes(value.toLowerCase());
             });
             setData(filteredData);
             setSearched(true);
@@ -104,7 +104,7 @@ export default function Penjualan() {
                     <div className="justify-end flex">
                         <div className="w-4/12 mb-5">
                             <Input
-                                label="Cari Nama Produk atau Customer"
+                                label="Cari Sales Order atau Nama Customer"
                                 crossOrigin=""
                                 icon={<svg
                                     xmlns="http://www.w3.org/2000/svg"
