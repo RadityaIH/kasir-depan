@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { setCookie, deleteCookie, getCookie } from "cookies-next"
 import Fail from "@/components/fail";
+import logo from "../public/offo-living.png";
 
 // type User = {
 //   username: string;
@@ -87,7 +88,7 @@ export default function Login() {
       <div className="h-screen w-screen relative flex">
         <div className="w-1/2 h-full flex justify-center items-center">
             <Image
-                src="/../../offo-living.png"
+                src={logo}
                 width={500}
                 height={500}
                 alt="Picture of the author"></Image>
