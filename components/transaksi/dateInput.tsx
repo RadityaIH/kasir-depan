@@ -44,7 +44,7 @@ export default function DateInput({dateSQL, setDateSQL}: InputProps) {
                         value={date ? formatDate(date) : ""}
                         placeholder=""
                         crossOrigin=""
-                        className="bg-gray-50"
+                        className="bg-gray-50 z-50"
                     />
                 </PopoverHandler>
                 <PopoverContent placeholder="">
@@ -54,7 +54,7 @@ export default function DateInput({dateSQL, setDateSQL}: InputProps) {
                         onSelect={setDate}
                         showOutsideDays
                         disabled={(date: Date) => isBefore(date, new Date())}
-                        className="border-0"
+                        className="border-0 z-50"
                         classNames={{
                             caption: "flex justify-center py-2 mb-4 relative items-center",
                             caption_label: "text-sm font-medium text-gray-900",

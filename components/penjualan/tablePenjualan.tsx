@@ -21,7 +21,7 @@ interface SOResponse {
     nama_sales: string;
     no_telp: string;
     qty: string;
-    remarks: string | null;
+    remarks: string;
     status_terima: number;
     tanggal_transaksi: string;
     total_dp1: number;
@@ -90,7 +90,7 @@ export default function TabelPenjualan({ TABLE_HEAD, TABLE_ROWS, isSearched }: I
             setSelectedSO(sSO)
         }
     }, [selectedIdSO])
-    console.log(selectedSO)
+    // console.log(selectedSO)
 
     return (
         <>
