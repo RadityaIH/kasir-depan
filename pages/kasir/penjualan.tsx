@@ -21,7 +21,7 @@ interface SOResponse {
     nama_sales: string; 
     no_telp: string; 
     qty: string; 
-    remarks: string | null;
+    remarks: string;
     status_terima: number; 
     tanggal_transaksi: string; 
     total_dp1: number; 
@@ -30,6 +30,10 @@ interface SOResponse {
 }
 
 export default function Penjualan() {
+    const [changes, setChanges] = useState(0);
+    const handleChanges = () => {
+        setChanges(changes + 1);
+    }
     const [resSO, setResSO] = useState<SOResponse[]>([]);
     const [loading, setLoading] = useState(true)
     useEffect(() => {
@@ -60,8 +64,8 @@ export default function Penjualan() {
             }
         };
         fetchSOData();
-    }, [token]);
-    console.log(resSO)
+    }, [token, changes]);
+    // console.log(resSO)
 
     const TABLE_HEAD = ["No", "Sales Order", "Nama Customer", "Tanggal Transaksi", "Produk", "Sales", "Harga", "Balance Due", "Aksi"]
 
@@ -100,7 +104,6 @@ export default function Penjualan() {
                 <div className="ml-1">
                     <Typography variant="h4" className="mb-5">History Penjualan</Typography>
                     <p>Tabel History Penjualan. Bisa Updt Del. Filter search per waktu, status(lunas/belum), sales </p>
-                    <p>Tabel: No, Nama Cust, Nama Produk, Qty, Tanggal Order, Tanggal Pelunasan</p>
                     <div className="justify-end flex">
                         <div className="w-4/12 mb-5">
                             <Input
@@ -129,7 +132,7 @@ export default function Penjualan() {
                         <Spinner color="red" />
                         </div>
                     : <>
-                    <TabelPenjualan TABLE_HEAD={TABLE_HEAD} TABLE_ROWS={finalData} isSearched={searched}/>
+                    <TabelPenjualan TABLE_HEAD={TABLE_HEAD} TABLE_ROWS={finalData} isSearched={searched} handleChanges={handleChanges}/>
                     </>
 }
                 </div>

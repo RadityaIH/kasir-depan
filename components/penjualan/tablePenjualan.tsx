@@ -5,6 +5,9 @@ import Pagination from "../pagination";
 import Link from "next/link";
 import DialogFoto from "../profile/uploadFoto";
 import DialogEdit from "./editSO";
+import { getCookie } from "cookies-next";
+import axios from "axios";
+import ConfirmDialog from "./confirmDialog";
 
 interface SOResponse {
     alamat: string;
@@ -33,9 +36,10 @@ interface InventoryTableProps {
     TABLE_HEAD: string[];
     TABLE_ROWS: SOResponse[];
     isSearched: boolean;
+    handleChanges: () => void;
 }
 
-export default function TabelPenjualan({ TABLE_HEAD, TABLE_ROWS, isSearched }: InventoryTableProps) {
+export default function TabelPenjualan({ TABLE_HEAD, TABLE_ROWS, isSearched, handleChanges }: InventoryTableProps) {
     const [posts, setposts] = useState<SOResponse[]>([]);
     const [currentPage, setcurrentPage] = useState(1);
 
@@ -90,10 +94,60 @@ export default function TabelPenjualan({ TABLE_HEAD, TABLE_ROWS, isSearched }: I
             setSelectedSO(sSO)
         }
     }, [selectedIdSO])
-    // console.log(selectedSO)
+   
+    
+    //delete
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [selectedIdSOToDelete, setSelectedIdSOToDelete] = useState("");
+
+    const handleOpenDeleteDialog = (id_SO: string) => {
+        setSelectedIdSOToDelete(id_SO);
+        setOpenDeleteDialog(true);
+    };
+
+    const handleCloseDeleteDialog = () => {
+        setOpenDeleteDialog(false);
+    };
+
+    const handleConfirmDelete = async () => {
+        await handleDelete(selectedIdSOToDelete);
+        setOpenDeleteDialog(false);
+    };
+
+    const handleDelete = async (id_SO: string) => {
+        const sSO = TABLE_ROWS.find((so) => so.id_SO === id_SO)
+        if (sSO?.status_terima === 1) {
+            alert("Barang sudah diterima, tidak bisa dihapus")
+            return
+        }
+
+        const token = getCookie("token");
+        if (token) {
+            try {
+                const response = await axios.delete(`${process.env.BACKEND_API}/deleteSO/${id_SO}`, 
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: true
+                });
+                if (response.status !== 200) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                handleChanges()
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        }
+    }
 
     return (
         <>
+            <ConfirmDialog
+                open={openDeleteDialog}
+                handleClose={handleCloseDeleteDialog}
+                handleConfirm={handleConfirmDelete}
+            />
             <DialogEdit handleOpen={handleOpen} open={open} selectedSO={selectedSO} />
 
             <Card className="overflow-auto h-auto" placeholder="">
@@ -183,12 +237,10 @@ export default function TabelPenjualan({ TABLE_HEAD, TABLE_ROWS, isSearched }: I
                                                             />
                                                         </svg>
                                                     </div>
-                                                {/* <Link href={`/kasir/penjualan/${data.id_SO}`}>
-                                                </Link> */}
                                             </div>
                                             <div className="inline-block ml-2">
-                                                <div className="p-2 hover:bg-red-300 cursor-pointer bg-red-500 rounded-xl"
-                                                // onClick={}
+                                                <div className={`p-2 hover:bg-red-300 rounded-xl ${data.status_terima === 0 ? 'cursor-pointer bg-red-500' : 'bg-red-500/35 cursor-not-allowed'}`}
+                                                onClick={(e) => data.status_terima === 0 ? handleOpenDeleteDialog(data.id_SO) : null}
                                                 >
                                                     <svg
                                                         xmlns="http://www.w3.org/2000/svg"
