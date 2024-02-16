@@ -4,7 +4,7 @@ import _ from "lodash";
 import Pagination from "../pagination";
 import Link from "next/link";
 import DialogFoto from "../profile/uploadFoto";
-import DialogEdit from "./editSO";
+import DialogDetail from "./detailSO";
 import { getCookie } from "cookies-next";
 import axios from "axios";
 import ConfirmDialog from "./confirmDialog";
@@ -148,7 +148,7 @@ export default function TabelPenjualan({ TABLE_HEAD, TABLE_ROWS, isSearched, han
                 handleClose={handleCloseDeleteDialog}
                 handleConfirm={handleConfirmDelete}
             />
-            <DialogEdit handleOpen={handleOpen} open={open} selectedSO={selectedSO} />
+            <DialogDetail handleOpen={handleOpen} open={open} selectedSO={selectedSO} />
 
             <Card className="overflow-auto h-auto" placeholder="">
                 <table className="w-full text-left">
@@ -203,17 +203,17 @@ export default function TabelPenjualan({ TABLE_HEAD, TABLE_ROWS, isSearched, han
                                     </td>
                                     <td className="p-4">
                                         <Typography variant="small" color="blue-gray" classname="font-normal">
-                                            {data.nama_sales}
+                                            {data.status_terima === 0 ? "Belum diterima" : "Diterima"}
+                                        </Typography>
+                                    </td>
+                                    <td className="p-4">
+                                        <Typography variant="small" color="blue-gray" classname="font-normal">
+                                            {data.balance_due === 0 ? "Lunas" : "Belum lunas"}
                                         </Typography>
                                     </td>
                                     <td className="p-4">
                                         <Typography variant="small" color="blue-gray" classname="font-normal">
                                             {formatCurrency(data.total_harga)}
-                                        </Typography>
-                                    </td>
-                                    <td className="p-4">
-                                        <Typography variant="small" color="blue-gray" classname="font-normal">
-                                            {formatCurrency(data.balance_due)}
                                         </Typography>
                                     </td>
                                     <td>

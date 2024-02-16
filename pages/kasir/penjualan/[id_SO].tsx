@@ -1,10 +1,106 @@
 import { Card, Typography } from "@material-tailwind/react";
+import { getCookie } from "cookies-next";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import useSWR from "swr";
+
+interface SOResponse {
+    alamat: string; 
+    balance_due: number; 
+    harga_item_ppn: string; 
+    id: number; 
+    id_SO: string; 
+    jadwal_kirim: string; 
+    kode_produk: string;
+    metode_dp1: string; 
+    metode_dp2: string | null;
+    nama_cust: string; 
+    nama_produk: string; 
+    nama_sales: string; 
+    no_telp: string; 
+    qty: string; 
+    remarks: string;
+    status_terima: number; 
+    tanggal_transaksi: string; 
+    total_dp1: number; 
+    total_dp2: number | null; 
+    total_harga: number; 
+}
+
+const fetcher = async (url: string) => {
+    const token = getCookie("token");
+    const response = await fetch(url, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    return response.json();
+};
 
 export default function EditSO() {
+    //fetch from parameter
     const router = useRouter();
     const { id_SO } = router.query;
+
+    //fetch data SO from db
+    const { data: resSO, error } = useSWR(`${process.env.BACKEND_API}/getSOById/${id_SO}`, fetcher);
+    const [data, setData] = useState<SOResponse[]>([]); // Initialize with empty array
+    useEffect(() => {
+        if (resSO) {
+            setData(resSO); // Update data when resSO changes
+        }
+    }, [resSO]);
+    console.log(data)
+    //Page state based on 'transaksi'
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const handleNext = () => {
+        setCurrentPage(currentPage + 1);
+    }
+
+    const handlePrev = () => {
+        setCurrentPage(currentPage - 1);
+    }
+
+    const [dataCust, setDataCust] = useState({ nama: "", no_telp: "", alamat: "" });
+    const [dataPage2, setDataPage2] = useState({ sales: "", salesId: 0, jadwal_kirim: "", produkPage2: [], total_harga: 0 });
+    const [dataPage3, setDataPage3] = useState({ total_harga: 0, metodeBayar1Mix: "", metodeBayar2Mix: "", downPayment1: 0, downPayment2: 0, balance_due: 0 })
+
+    const [savedStat, setSavedStat] = useState(false);
+    useEffect(() => {
+        const handleBeforeUnload = (event: any) => {
+            if (currentPage !== 1 && !savedStat) {
+                event.preventDefault();
+                event.returnValue = "Data yang sedang dimasukkan akan hilang jika anda keluar dari halaman ini, yakin?";
+            }
+        };
+
+        const handleRouteChangeStart = (url: string, { shallow }: { shallow: boolean }) => {
+            if (currentPage !== 1 && !savedStat) {
+                if (!window.confirm("Data yang sedang dimasukkan akan hilang jika anda keluar dari halaman ini, yakin?")) {
+                    router.events.emit("routeChangeError");
+                    throw 'routeChange aborted.';
+                }
+            }
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        router.events.on("routeChangeStart", handleRouteChangeStart);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+            router.events.off("routeChangeStart", handleRouteChangeStart);
+        };
+    }, [currentPage, router, savedStat]);
+
     return (
         <>
             <Head>

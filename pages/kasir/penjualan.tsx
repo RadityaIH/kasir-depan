@@ -67,7 +67,7 @@ export default function Penjualan() {
     }, [token, changes]);
     // console.log(resSO)
 
-    const TABLE_HEAD = ["No", "Sales Order", "Nama Customer", "Tanggal Transaksi", "Produk", "Sales", "Harga", "Balance Due", "Aksi"]
+    const TABLE_HEAD = ["No", "Sales Order", "Nama Customer", "Tanggal Transaksi", "Produk", "Status Kirim", "Pembayaran", "Harga", "Aksi"]
 
     const [data, setData] = useState<SOResponse[]>([]);
     useEffect(() => {

@@ -199,6 +199,7 @@ export default function ProductInput({ dataProduct, productChosen, handleDeleteP
                         name="qty"
                         crossOrigin=""
                         className="bg-gray-50"
+                        min={0}
                         type="number"
                         value={qty}
                         // onChange={(e) => setQty(e.target.value)}

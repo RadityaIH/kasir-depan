@@ -65,9 +65,9 @@ interface SOResponse {
     id_SO: string;
 }
 
-export default function DialogEdit({ handleOpen, open, selectedSO }: InputProps) {
+export default function DialogDetail({ handleOpen, open, selectedSO }: InputProps) {
     const router = useRouter();
-    
+
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat("id-ID", {
             style: "currency",
@@ -164,7 +164,7 @@ export default function DialogEdit({ handleOpen, open, selectedSO }: InputProps)
                             <Typography variant="paragp" className="flex w-1/2">
                                 <a className="font-bold w-1/3">Tgl. Pengiriman: </a>
                                 <div className="w-2/3">
-                                <a className="">{selectedSO && formatDate(selectedSO.jadwal_kirim)}</a>
+                                    <a className="">{selectedSO && formatDate(selectedSO.jadwal_kirim)}</a>
                                 </div>
                             </Typography>
                         </div>
@@ -274,24 +274,29 @@ export default function DialogEdit({ handleOpen, open, selectedSO }: InputProps)
                     </CardBody>
                     <CardFooter placeholder="" className="flex justify-between">
                         <Button color="red" onClick={handleOpen} placeholder="">Tutup</Button>
-                        <Button className="bg-yellow-700" onClick={(e) => handleEdit(selectedSO.id_SO)} placeholder="">
-                            <div className="flex gap-3">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    className="w-5 h-5"
-                                >
-                                    <path
-                                        fill="#000"
-                                        fillRule="evenodd"
-                                        d="M21.121 2.707a3 3 0 0 0-4.242 0l-1.68 1.68-7.906 7.906a1 1 0 0 0-.263.464l-1 4a1 1 0 0 0 1.213 1.213l4-1a1 1 0 0 0 .464-.263l7.849-7.848 1.737-1.738a3 3 0 0 0 0-4.242l-.172-.172Zm-2.828 1.414a1 1 0 0 1 1.414 0l.172.172a1 1 0 0 1 0 1.414l-1.017 1.017-1.555-1.617.986-.986Zm-2.4 2.4 1.555 1.617-6.96 6.959-2.114.529.529-2.115 6.99-6.99ZM4 8a1 1 0 0 1 1-1h5a1 1 0 1 0 0-2H5a3 3 0 0 0-3 3v11a3 3 0 0 0 3 3h11a3 3 0 0 0 3-3v-5a1 1 0 0 0-2 0v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8Z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                                <p className="text-black text-center">Edit</p>
-                            </div>
-                        </Button>
+                        {selectedSO.status_terima === 0 ?
+                            <Button className="bg-yellow-700" onClick={(e) => handleEdit(selectedSO.id_SO)} placeholder="">
+                                <div className="flex gap-3">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        className="w-5 h-5"
+                                    >
+                                        <path
+                                            fill="#000"
+                                            fillRule="evenodd"
+                                            d="M21.121 2.707a3 3 0 0 0-4.242 0l-1.68 1.68-7.906 7.906a1 1 0 0 0-.263.464l-1 4a1 1 0 0 0 1.213 1.213l4-1a1 1 0 0 0 .464-.263l7.849-7.848 1.737-1.738a3 3 0 0 0 0-4.242l-.172-.172Zm-2.828 1.414a1 1 0 0 1 1.414 0l.172.172a1 1 0 0 1 0 1.414l-1.017 1.017-1.555-1.617.986-.986Zm-2.4 2.4 1.555 1.617-6.96 6.959-2.114.529.529-2.115 6.99-6.99ZM4 8a1 1 0 0 1 1-1h5a1 1 0 1 0 0-2H5a3 3 0 0 0-3 3v11a3 3 0 0 0 3 3h11a3 3 0 0 0 3-3v-5a1 1 0 0 0-2 0v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8Z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                    <p className="text-black text-center">Edit</p>
+                                </div>
+                            </Button>
+                        : 
+                        <div>
+                            <p className="text-red-500">Note: Barang yang sudah diterima tidak bisa diedit.</p>
+                        </div>}
                     </CardFooter>
                 </>
             </Card>
