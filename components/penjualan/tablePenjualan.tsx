@@ -73,12 +73,12 @@ export default function TabelPenjualan({ TABLE_HEAD, TABLE_ROWS, isSearched, han
             "Januari", "Februari", "Maret", "April", "Mei", "Juni",
             "Juli", "Agustus", "September", "Oktober", "November", "Desember"
         ];
-    
+
         const date = new Date(dateString);
         const day = date.getDate();
         const monthIndex = date.getMonth();
         const year = date.getFullYear();
-    
+
         return `${day} ${months[monthIndex]} ${year}`;
     }
 
@@ -94,8 +94,8 @@ export default function TabelPenjualan({ TABLE_HEAD, TABLE_ROWS, isSearched, han
             setSelectedSO(sSO)
         }
     }, [selectedIdSO])
-   
-    
+
+
     //delete
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedIdSOToDelete, setSelectedIdSOToDelete] = useState("");
@@ -124,13 +124,13 @@ export default function TabelPenjualan({ TABLE_HEAD, TABLE_ROWS, isSearched, han
         const token = getCookie("token");
         if (token) {
             try {
-                const response = await axios.delete(`${process.env.BACKEND_API}/deleteSO/${id_SO}`, 
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    withCredentials: true
-                });
+                const response = await axios.delete(`${process.env.BACKEND_API}/deleteSO/${id_SO}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                        withCredentials: true
+                    });
                 if (response.status !== 200) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
@@ -219,28 +219,26 @@ export default function TabelPenjualan({ TABLE_HEAD, TABLE_ROWS, isSearched, han
                                     <td>
                                         <div className="flex items-center">
                                             <div className="inline-block">
-                                                    <div className="p-2 hover:bg-yellow-400 cursor-pointer bg-yellow-700 rounded-xl"
-                                                    onClick={() =>  {handleOpen()
-                                                                    setSelectedIdSO(data.id_SO)}}
+                                                <div className="p-2 hover:bg-blue-400 cursor-pointer bg-blue-700 rounded-xl"
+                                                    onClick={() => {
+                                                        handleOpen()
+                                                        setSelectedIdSO(data.id_SO)
+                                                    }}
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="w-5 h-5"
+                                                        viewBox="0 0 24 24"
+                                                        fill="#FFF"
                                                     >
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            className="w-5 h-5"
-                                                        >
-                                                            <path
-                                                                fill="#000"
-                                                                fillRule="evenodd"
-                                                                d="M21.121 2.707a3 3 0 0 0-4.242 0l-1.68 1.68-7.906 7.906a1 1 0 0 0-.263.464l-1 4a1 1 0 0 0 1.213 1.213l4-1a1 1 0 0 0 .464-.263l7.849-7.848 1.737-1.738a3 3 0 0 0 0-4.242l-.172-.172Zm-2.828 1.414a1 1 0 0 1 1.414 0l.172.172a1 1 0 0 1 0 1.414l-1.017 1.017-1.555-1.617.986-.986Zm-2.4 2.4 1.555 1.617-6.96 6.959-2.114.529.529-2.115 6.99-6.99ZM4 8a1 1 0 0 1 1-1h5a1 1 0 1 0 0-2H5a3 3 0 0 0-3 3v11a3 3 0 0 0 3 3h11a3 3 0 0 0 3-3v-5a1 1 0 0 0-2 0v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8Z"
-                                                                clipRule="evenodd"
-                                                            />
-                                                        </svg>
-                                                    </div>
+                                                        <title />
+                                                        <path d="M8 12a2 2 0 1 1-2-2 2 2 0 0 1 2 2Zm10-2a2 2 0 1 0 2 2 2 2 0 0 0-2-2Zm-6 0a2 2 0 1 0 2 2 2 2 0 0 0-2-2Z" />
+                                                    </svg>
+                                                </div>
                                             </div>
                                             <div className="inline-block ml-2">
                                                 <div className={`p-2 hover:bg-red-300 rounded-xl ${data.status_terima === 0 ? 'cursor-pointer bg-red-500' : 'bg-red-500/35 cursor-not-allowed'}`}
-                                                onClick={(e) => data.status_terima === 0 ? handleOpenDeleteDialog(data.id_SO) : null}
+                                                    onClick={(e) => data.status_terima === 0 ? handleOpenDeleteDialog(data.id_SO) : null}
                                                 >
                                                     <svg
                                                         xmlns="http://www.w3.org/2000/svg"

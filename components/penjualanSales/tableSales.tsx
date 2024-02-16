@@ -85,16 +85,18 @@ export default function TabelSales({ TABLE_HEAD, TABLE_ROWS, isSearched }: Sales
                                     </td>
                                     <td>
                                         <div className="flex">
-                                            <div className="p-2 hover:bg-gray-400 cursor-pointer border-1 border-solid rounded-xl"
+                                            <div className="p-2 hover:bg-blue-200 bg-blue-500 cursor-pointer border-1 border-solid rounded-xl"
                                             // onClick={() =>  {handleOpen()
                                             //                 setSelectedIdSO(data.id_SO)}}
                                             >
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 24 24"
                                                     className="w-5 h-5"
+                                                    viewBox="0 0 24 24"
+                                                    fill="#FFF"
                                                 >
-                                                    <path d="M2 4a1 1 0 0 1 1-1h18a1 1 0 0 1 0 2H3a1 1 0 0 1-1-1Zm1 9h18a1 1 0 0 0 0-2H3a1 1 0 0 0 0 2Zm0 8h9a1 1 0 0 0 0-2H3a1 1 0 0 0 0 2Z" />
+                                                    <title />
+                                                    <path d="M8 12a2 2 0 1 1-2-2 2 2 0 0 1 2 2Zm10-2a2 2 0 1 0 2 2 2 2 0 0 0-2-2Zm-6 0a2 2 0 1 0 2 2 2 2 0 0 0-2-2Z" />
                                                 </svg>
                                             </div>
                                         </div>

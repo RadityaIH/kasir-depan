@@ -71,7 +71,6 @@ export default function InputPage3({ onPrev, onNext, total_harga, dataPage3, set
         setDownPayment2(0);
         setBalanceDue(0);
         setMetodePembayaran2("");
-        setBank1("");
         setBank2("");
     }
 

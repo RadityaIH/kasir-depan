@@ -45,6 +45,7 @@ const Layout = ({ children }: PropsWithChildren) => {
 
             } catch (error) {
                 console.error('Fetch error:', error);
+                return <div>Database Error!</div>
             }
         };
         
