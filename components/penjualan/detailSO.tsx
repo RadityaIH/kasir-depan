@@ -295,7 +295,7 @@ export default function DialogDetail({ handleOpen, open, selectedSO }: InputProp
                             </Button>
                         : 
                         <div>
-                            <p className="text-red-500">Note: Barang yang sudah diterima tidak bisa diedit.</p>
+                            <p className="text-red-500">Barang yang sudah diterima tidak bisa diedit.</p>
                         </div>}
                     </CardFooter>
                 </>

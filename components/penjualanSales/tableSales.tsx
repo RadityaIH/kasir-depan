@@ -6,6 +6,7 @@ import Link from "next/link";
 import DialogFoto from "../profile/uploadFoto";
 import { getCookie } from "cookies-next";
 import axios from "axios";
+import SalesDialog from "./salesDialog";
 
 interface SalesResponse {
     Nama: string;
@@ -15,10 +16,9 @@ interface SalesResponse {
 interface SalesTableProps {
     TABLE_HEAD: string[];
     TABLE_ROWS: SalesResponse[];
-    isSearched: boolean;
 }
 
-export default function TabelSales({ TABLE_HEAD, TABLE_ROWS, isSearched }: SalesTableProps) {
+export default function TabelSales({ TABLE_HEAD, TABLE_ROWS }: SalesTableProps) {
     const [posts, setposts] = useState<SalesResponse[]>([]);
     const [currentPage, setcurrentPage] = useState(1);
 
@@ -35,13 +35,18 @@ export default function TabelSales({ TABLE_HEAD, TABLE_ROWS, isSearched }: Sales
 
     useEffect(() => {
         setposts(TABLE_ROWS);
-        if (isSearched) {
-            setcurrentPage(1);
-        }
     }, [TABLE_ROWS]);
+
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => {
+        setOpen((cur) => !cur)
+    };
+    const [selectedIdSales, setSelectedIdSales] = useState<number>(0);
+    const [selectedSalesName, setSelectedSalesName] = useState<string>("");
 
     return (
         <>
+            <SalesDialog handleOpen={handleOpen} open={open} idSales={selectedIdSales} salesName={selectedSalesName}/>
             <Card className="overflow-auto h-auto" placeholder="">
                 <table className="w-full text-left">
                     <thead>
@@ -86,8 +91,10 @@ export default function TabelSales({ TABLE_HEAD, TABLE_ROWS, isSearched }: Sales
                                     <td>
                                         <div className="flex">
                                             <div className="p-2 hover:bg-blue-200 bg-blue-500 cursor-pointer border-1 border-solid rounded-xl"
-                                            // onClick={() =>  {handleOpen()
-                                            //                 setSelectedIdSO(data.id_SO)}}
+                                            onClick={() =>  {
+                                                handleOpen()
+                                                setSelectedIdSales(data.id_sales)
+                                                setSelectedSalesName(data.Nama)}}
                                             >
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"

@@ -1,3 +1,4 @@
+import InputPage2 from "@/components/transaksi/InputPage2";
 import { Card, Typography } from "@material-tailwind/react";
 import { getCookie } from "cookies-next";
 import Head from "next/head";
@@ -56,9 +57,12 @@ export default function EditSO() {
     useEffect(() => {
         if (resSO) {
             setData(resSO); // Update data when resSO changes
+            if (resSO[0].status_terima === 1) {
+                router.push("/kasir/penjualan");
+            }
         }
     }, [resSO]);
-    console.log(data)
+
     //Page state based on 'transaksi'
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -123,8 +127,9 @@ export default function EditSO() {
                             <Typography variant="h6" className="text-orange">Kembali</Typography>
                         </button>
                     </div>
-                    <h1 className="mt-5">Edit Sales Order {id_SO}</h1>
-                    <p>Edit Order</p>
+                    <Card className="p-3 border-solid border-2" placeholder="">
+                        {data[0].nama_produk}
+                    </Card>
                 </div>
             </Card>
         </>

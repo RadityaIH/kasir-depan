@@ -293,7 +293,7 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
 
                         <div className="w-1/2 ml-1">
                             <Typography variant="paragraph">Estimasi Tanggal Pengantaran</Typography>
-                            <DateInput dateSQL={dateSQL} setDateSQL={handleSetDateSQL} />
+                            <DateInput dateSQL={dateSQL} setDateSQL={handleSetDateSQL} canBefore={false}/>
                         </div>
                     </div>
 

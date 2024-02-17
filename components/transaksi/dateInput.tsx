@@ -13,9 +13,10 @@ import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
 interface InputProps {
     dateSQL: string;
     setDateSQL: (tanggal: string) => void;
+    canBefore: boolean;
 }
 
-export default function DateInput({dateSQL, setDateSQL}: InputProps) {
+export default function DateInput({dateSQL, setDateSQL, canBefore}: InputProps) {
     const [date, setDate] = React.useState<Date>();
 
     const formatDate = (date: Date) => {
@@ -53,7 +54,7 @@ export default function DateInput({dateSQL, setDateSQL}: InputProps) {
                         selected={date}
                         onSelect={setDate}
                         showOutsideDays
-                        disabled={(date: Date) => isBefore(date, new Date())}
+                        disabled={canBefore ? false : (date: Date) => isBefore(date, new Date())}
                         className="border-0 z-50"
                         classNames={{
                             caption: "flex justify-center py-2 mb-4 relative items-center",
