@@ -3,9 +3,10 @@ import { Button, Card, Input, Spinner, Typography, select } from "@material-tail
 import { getCookie } from "cookies-next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import Select from 'react-select'
 import DateInput from "@/components/transaksi/dateInput";
+import AddSalesDialog from "@/components/penjualanSales/addSales";
 
 interface SalesResponse {
     Nama: string;
@@ -36,7 +37,23 @@ const fetcher = async (url: string) => {
 
 export default function penjualanSales() {
     //Fetch and set options
-    const { data: resSO, error } = useSWR(`${process.env.BACKEND_API}/getSalesAll`, fetcher);
+    const [changes, setChanges] = useState(0);
+    const handleChanges = () => {
+        setChanges(changes + 1);
+    }
+    const { data: resSO, error } = useSWR(
+        `${process.env.BACKEND_API}/getSalesAll`,
+        fetcher,
+        {
+            revalidateOnMount: true,
+            revalidateOnFocus: true,
+        }
+    );
+
+    // Update data whenever 'changes' state changes
+    useEffect(() => {
+        mutate(`${process.env.BACKEND_API}/getSalesAll`);
+    }, [changes]);
 
     const newSalesOption: OptionType = { value: 'all', label: 'Semua' };
 
@@ -112,6 +129,11 @@ export default function penjualanSales() {
 
     console.log(data)
 
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => {
+        setOpen((cur) => !cur)
+    };
+
 
     //Error
     if (error) {
@@ -133,6 +155,7 @@ export default function penjualanSales() {
 
     return (
         <>
+            <AddSalesDialog handleOpen={handleOpen} open={open} handleChanges={handleChanges}/>
             <Head>
                 <title>Penjualan Sales</title>
             </Head>
@@ -181,7 +204,7 @@ export default function penjualanSales() {
                 </div>
                 <div className="fixed bottom-5 right-5">
                     <button className="ml-1 mt-3 p-3 rounded-full bg-orange"
-                        // onClick={handleAddProduct}
+                        onClick={handleOpen}
                         type="button">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
