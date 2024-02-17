@@ -35,7 +35,7 @@ const fetcher = async (url: string) => {
     return response.json();
 };
 
-export default function penjualanSales() {
+export default function PenjualanSales() {
     //Fetch and set options
     const [changes, setChanges] = useState(0);
     const handleChanges = () => {
