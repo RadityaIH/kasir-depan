@@ -1,12 +1,14 @@
 import TabelSales from "@/components/penjualanSales/tableSales";
-import { Button, Card, Input, Spinner, Typography, select } from "@material-tailwind/react";
+import { Button, ButtonGroup, Card, Input, Spinner, Typography, select } from "@material-tailwind/react";
 import { getCookie } from "cookies-next";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import useSWR, { mutate } from 'swr';
 import Select from 'react-select'
 import DateInput from "@/components/transaksi/dateInput";
 import AddSalesDialog from "@/components/penjualanSales/addSales";
+import LineChartAll from "@/components/dashboard/chartAll";
+import SalesDialog from "@/components/penjualanSales/salesDialog";
 
 interface SalesResponse {
     Nama: string;
@@ -68,6 +70,9 @@ export default function PenjualanSales() {
             setSelectedSales(selectedOption);
         }
     };
+
+    const { data: resChart, error: errorChart } = useSWR(selectedSales.value !== "all" ? `${process.env.BACKEND_API}/getSOperDateperSales/${selectedSales.value}` : null, fetcher);
+    console.log(resChart)
 
     const TABLE_HEAD = ["No", "Nama", "Penjualan", "Aksi"];
 
@@ -134,6 +139,13 @@ export default function PenjualanSales() {
         setOpen((cur) => !cur)
     };
 
+    const [openDetail, setOpenDetail] = useState(false);
+    const handleOpenDetail = () => {
+        setOpenDetail((cur) => !cur)
+    }
+    const [selectedIdSales, setSelectedIdSales] = useState<number>(0);
+    const [selectedSalesName, setSelectedSalesName] = useState<string>("");
+ 
 
     //Error
     if (error) {
@@ -155,18 +167,19 @@ export default function PenjualanSales() {
 
     return (
         <>
-            <AddSalesDialog handleOpen={handleOpen} open={open} handleChanges={handleChanges}/>
+            <SalesDialog handleOpen={handleOpenDetail} open={openDetail} idSales={selectedIdSales} salesName={selectedSalesName} />
+            <AddSalesDialog handleOpen={handleOpen} open={open} handleChanges={handleChanges} />
             <Head>
                 <title>Penjualan Sales</title>
             </Head>
-            <Card className="p-3 h-screen" placeholder={"card"}>
+            <Card className="p-3 h-auto" placeholder={"card"}>
                 <div className="ml-1">
                     <Typography variant="h4" className="mb-5">Penjualan Sales</Typography>
 
                     <div className="flex ml-1 mb-1 mt-5">
                         <Typography variant="paragraph">Pilih Sales</Typography>
                     </div>
-                    <div className="ml-1">
+                    <div className="ml-1 flex gap-3">
                         <Select
                             id="pilih_customer"
                             name="pilih_customer"
@@ -175,31 +188,40 @@ export default function PenjualanSales() {
                             options={salesOptions}
                             className="w-full bg-gray-50"
                         />
-                    </div>
-                    <div className="mt-2 mb-8 flex border border-gray-400 p-3 rounded-lg justify-between">
-                        <Typography variant="paragraph" className="mr-3 font-semibold">Filter Date</Typography>
-                        <div className="flex">
-                            <Typography variant="paragraph" className="mr-3">From</Typography>
-                            <div className="">
-                                <DateInput key={`date1-${dateSQL1}`} dateSQL={dateSQL1} setDateSQL={handleSetDateSQL1} canBefore={true} />
-                            </div>
-                            <Typography variant="paragraph" className="mr-3 ml-3">To</Typography>
-                            <div className="">
-                                <DateInput key={`date2-${dateSQL2}`} dateSQL={dateSQL2} setDateSQL={handleSetDateSQL2} canBefore={true} />
-                            </div>
-                        </div>
-                        <div className="flex gap-3">
-                            <Button color="red" placeholder="" onClick={handleReset}>Batal</Button>
-                            <Button className="bg-gray-100 border border-blue-500" placeholder="" onClick={handleFilter}>
-                                <p className="text-blue-500">Filter</p>
-                            </Button>
-                        </div>
+                        {selectedSales.value !== 'all' &&
+                            <Button placeholder="" color="blue" onClick={() =>  {
+                                handleOpenDetail()
+                                setSelectedIdSales(parseInt(selectedSales.value))
+                                setSelectedSalesName(selectedSales.label)}}
+                            >Detail</Button>
+                        }
                     </div>
                     {selectedSales.value === "all" ?
-                        <TabelSales TABLE_HEAD={TABLE_HEAD} TABLE_ROWS={finalData} />
+                        <>
+                            <div className="mt-2 mb-8 flex border border-gray-400 p-3 rounded-lg justify-between">
+                                <Typography variant="paragraph" className="mr-3 font-semibold">Filter Date</Typography>
+                                <div className="flex">
+                                    <Typography variant="paragraph" className="mr-3">From</Typography>
+                                    <div className="">
+                                        <DateInput key={`date1-${dateSQL1}`} dateSQL={dateSQL1} setDateSQL={handleSetDateSQL1} canBefore={true} />
+                                    </div>
+                                    <Typography variant="paragraph" className="mr-3 ml-3">To</Typography>
+                                    <div className="">
+                                        <DateInput key={`date2-${dateSQL2}`} dateSQL={dateSQL2} setDateSQL={handleSetDateSQL2} canBefore={true} />
+                                    </div>
+                                </div>
+                                <div className="flex gap-3">
+                                    <Button color="red" placeholder="" onClick={handleReset}>Batal</Button>
+                                    <Button className="bg-gray-100 border border-blue-500" placeholder="" onClick={handleFilter}>
+                                        <p className="text-blue-500">Filter</p>
+                                    </Button>
+                                </div>
+                            </div>
+                            <TabelSales TABLE_HEAD={TABLE_HEAD} TABLE_ROWS={finalData} />
+                        </>
                         :
-                        <div className="">
-                            <p>{selectedSales.label}</p>
+                        <div className="mt-4">
+                            {(!errorChart && !!resChart) && <LineChartAll value={resChart} />}
                         </div>}
                 </div>
                 <div className="fixed bottom-5 right-5">

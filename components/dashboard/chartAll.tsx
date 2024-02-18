@@ -45,8 +45,10 @@ export default function LineChartAll({ value }: InputProps) {
             datasets: [{
                 label: 'Jumlah',
                 data: [],
-                borderColor: 'purple',
-                fill: false
+                borderColor: 'orange',
+                fill: false,
+                backgroundColor: 'black',
+                pointRadius: 4
             }]
         };
 
@@ -78,7 +80,7 @@ export default function LineChartAll({ value }: InputProps) {
             },
             y: {
                 suggestedMin: 0,
-                suggestedMax: 4,
+                suggestedMax: 3,
                 title: {
                     display: true,
                     text: 'Jumlah'
