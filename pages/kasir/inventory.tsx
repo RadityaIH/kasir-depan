@@ -17,9 +17,15 @@ export default function Inventory() {
     
     const [dataFetch, setDataFetch] = useState<{ products: Product[] }>({ products: [] });
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null);
     useEffect(() => {
         fetch('https://gudang-back-end.vercel.app/products')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('HTTP error! Status: ' + response.status);
+            }
+            return response.json();
+        })
         .then((dataFetch) => {
             setDataFetch(dataFetch)
             setLoading(false)
@@ -27,6 +33,7 @@ export default function Inventory() {
         .catch(error => {
             console.log(error)
             setLoading(false)
+            setError('Error saat memuat data gudang');
         })
     }, [])
 
@@ -54,6 +61,12 @@ export default function Inventory() {
       }));
 
     console.log(data)
+
+    if (error) {
+        return (
+            <div className="text-red-500">{error}</div>
+        );
+    }
 
     return (
         <>

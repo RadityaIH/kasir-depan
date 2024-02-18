@@ -62,7 +62,7 @@ export default function Transaksi() {
 
                     <Card className="p-3 border-solid border-2" placeholder="">
                         {currentPage === 1 && <InputPage1 onNext={handleNext} dataCust={dataCust} setDataCust={setDataCust} />}
-                        {currentPage === 2 && <InputPage2 onPrev={handlePrev} onNext={handleNext} dataPage2={dataPage2} setDataPage2={setDataPage2} />}
+                        {currentPage === 2 && <InputPage2 onPrev={handlePrev} onNext={handleNext} dataPage2={dataPage2} setDataPage2={setDataPage2} canEdit={false} hargaLama={0}/>}
                         {currentPage === 3 && <InputPage3
                             onPrev={handlePrev}
                             onNext={handleNext}

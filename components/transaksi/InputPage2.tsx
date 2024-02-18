@@ -12,6 +12,8 @@ interface InputProps {
     onNext: () => void;
     dataPage2: { sales: string, jadwal_kirim: string, produkPage2: ProductChosen[], total_harga: number };
     setDataPage2: (data: any) => void;
+    canEdit: boolean;
+    hargaLama: number;
 }
 
 interface OptionType {
@@ -41,7 +43,7 @@ interface ProductChosen {
 
 const token = getCookie("token");
 
-export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: InputProps) {
+export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2, canEdit, hargaLama }: InputProps) {
     //SALES
     const [resSales, setResSales] = useState<any | null>(null);
     useEffect(() => {
@@ -93,10 +95,16 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
 
     //PRODUCTS
     const [resProduct, setResProduct] = useState<{ products: ProductResponse[] }>({ products: [] });
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     useEffect(() => {
         fetch('https://gudang-back-end.vercel.app/products')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error! Status: ' + response.status);
+                }
+                return response.json();
+            })
             .then((dataFetch) => {
                 setResProduct(dataFetch)
                 setLoading(false)
@@ -104,6 +112,7 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
             .catch(error => {
                 console.log(error)
                 setLoading(false)
+                setError('Error saat memuat data gudang');
             })
     }, [])
 
@@ -114,39 +123,9 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
 
     useEffect(() => {
         dataProduct.forEach((product) => {
-            product.harga = (product.harga * (1.11/0.7));
+            product.harga = (product.harga * (1.11 / 0.7));
         });
     }, [dataProduct])
-
-    const productOptions: OptionType[] = dataProduct ? [...dataProduct.map((product: ProductResponse) => ({
-        value: product.id_produk.toString(),
-        label: `${product.kode_produk} - ${product.nama_produk}`
-    }))] : [];
-
-    const [selectedProduct, setSelectedProduct] = useState({ value: '0', label: 'Pilih Produk' });
-    const [nama_produk, setNamaProduk] = useState("");
-    const [kode_produk, setKodeProduk] = useState("");
-    const [harga, setHarga] = useState(0);
-    const [stok, setStok] = useState(0);
-
-    const [qty, setQty] = useState<string>('');
-    const [OOS, setOOS] = useState(false);
-    const [ready, setReady] = useState(false);
-    const checkQty = (qty: string) => {
-        setQty(qty)
-        const qtyInt = parseInt(qty);
-        if (qtyInt > stok) {
-            setOOS(true)
-            setReady(false)
-        } else {
-            setOOS(false)
-            setReady(true)
-        }
-        if (qty === '') {
-            setReady(false)
-        }
-    }
-    const [remarks, setRemarks] = useState("");
 
     //HANDLE NEXT
     const [notFilled, setNotFilled] = useState(false);
@@ -160,22 +139,33 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
             total_harga: total_harga
         })
         console.log(dataPage2)
-        if (direction === 'left') {``
+        if (direction === 'left') {
+            ``
             onPrev()
             return;
         }
-        if (dateSQL === '' 
-            || selectedSales.value === '0' 
+        if (dateSQL === ''
+            || selectedSales.value === '0'
             || products.length === 0
             || products.some(product => product.id_produk === 0 || product.qty === 0)) {
             // console.log(selectedProduct.value === '0', qty === '', dateSQL === '', selectedSales.value === '0', OOS)
             setNotFilled(true);
             setAlertOOS(false);
+            window.scroll({
+                top: 0,
+                left: 0,
+                behavior: 'smooth'
+            });
             return;
         }
         if (products.some(product => product.qty > product.stok)) {
             setAlertOOS(true);
             setNotFilled(false);
+            window.scroll({
+                top: 0,
+                left: 0,
+                behavior: 'smooth'
+            });
             return;
         }
         if (direction === 'right') {
@@ -184,6 +174,52 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
         setNotFilled(false);
         setAlertOOS(false);
     }
+
+    //For Edit Page
+    const [errorHarga, setErrorHarga] = useState(false);
+    const handleEdit = () => {
+        if (total_harga < hargaLama) {
+            setErrorHarga(true);
+            window.scroll({
+                top: 0,
+                left: 0,
+                behavior: 'smooth'
+            });
+            return;
+        }
+
+        console.log(products.length === 0, products.some(product => product.id_produk === 0 || product.qty === 0))
+        if (products.length === 0
+            || products.some(product => product.id_produk === 0 || product.qty === 0)) {
+            // console.log(selectedProduct.value === '0', qty === '', dateSQL === '', selectedSales.value === '0', OOS)
+            setNotFilled(true);
+            setAlertOOS(false);
+            window.scroll({
+                top: 0,
+                left: 0,
+                behavior: 'smooth'
+            });
+            return;
+        }
+        setDataPage2({
+            sales: selectedSales.label,
+            salesId: selectedSales.value,
+            jadwal_kirim: dateSQL,
+            produkPage2: products,
+            total_harga: total_harga
+        })
+        setErrorHarga(false);
+        setNotFilled(false);
+        setAlertOOS(false);
+        onPrev()
+    }
+
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+        }).format(value);
+    };
 
     useEffect(() => {
         const existingSalesOption = salesOptions.find((option) => option.label === dataPage2.sales);
@@ -266,37 +302,85 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
         }
     };
 
+    useEffect(() => {
+        if (canEdit) {
+            const updatedProducts = products.map(product => {
+                // Cari data produk yang sesuai dengan id_produk di dalam products
+                const matchedProduct = dataProduct.find(p => p.kode_produk === product.kode_produk);
+                // Jika produk ditemukan, perbarui nilai id_produk dan stok
+                if (matchedProduct) {
+                    product.id_produk = matchedProduct.id_produk;
+                    product.stok = matchedProduct.stok;
+                }
+                return product;
+            });
+            // Setelah mengupdate produk, atur nilai produk yang diperbarui
+            setProducts(updatedProducts);
+        }
+    }, [dataPage2, resProduct])
+
+    if (error) {
+        return (
+            <>
+                <div className="text-red-500">{error}</div>
+                <Button
+                    className="mt-5 ml-1 bg-red-500"
+                    onClick={onPrev}
+                    placeholder="">
+                    <p className="">Kembali</p>
+                </Button>
+            </>
+        );
+    }
+
     return (
         <>
-            <Progress value={33} placeholder="" className="mb-3" color="red"></Progress>
+            {!canEdit && <Progress value={33} placeholder="" className="mb-3" color="red"></Progress>}
             <Typography variant="h5" className="text-center">Data Produk</Typography>
             {notFilled && <Fail Title="Peringatan!" Caption={`Seluruh Kolom Harus Diisi!`} />}
             {alertOOS && <Fail Title="Peringatan!" Caption={`Stok Produk Tidak Mencukupi`} />}
+            {errorHarga && <Fail Title="Harga Baru Tidak Boleh Kurang dari Harga Lama!" Caption={`Ganti produk, atau buat Order Baru jika harga produk yang diganti lebih rendah dari produk sebelumnya`} />}
 
             {loading ?
                 <div className="flex justify-center items-center h-screen">
                     <Spinner color="red" />
                 </div>
                 : <>
-                    <div className="flex gap-5 mt-5">
-                        <div className="w-3/4 ml-1">
-                            <Typography variant="paragraph">Pilih Sales</Typography>
-                            <Select
-                                id="pilih_sales"
-                                name="pilih_sales"
-                                value={selectedSales}
-                                onChange={handleChangeSales}
-                                options={salesOptions}
-                                className="w-full bg-gray-50"
-                            />
-                        </div>
+                    {!canEdit ?
+                        <div className="flex gap-5 mt-5">
+                            <div className="w-3/4 ml-1">
+                                <Typography variant="paragraph">Pilih Sales</Typography>
+                                <Select
+                                    id="pilih_sales"
+                                    name="pilih_sales"
+                                    value={selectedSales}
+                                    onChange={handleChangeSales}
+                                    options={salesOptions}
+                                    className="w-full bg-gray-50"
+                                />
+                            </div>
 
-                        <div className="w-1/2 ml-1">
-                            <Typography variant="paragraph">Estimasi Tanggal Pengantaran</Typography>
-                            <DateInput dateSQL={dateSQL} setDateSQL={handleSetDateSQL} canBefore={false}/>
+                            <div className="w-1/2 ml-1">
+                                <Typography variant="paragraph">Estimasi Tanggal Pengantaran</Typography>
+                                <DateInput dateSQL={dateSQL} setDateSQL={handleSetDateSQL} canBefore={false} />
+                            </div>
                         </div>
-                    </div>
-
+                        :
+                        <>
+                            {errorHarga &&
+                                <Typography variant="paragp" className="flex mt-5">
+                                    <a className="font-bold w-1/5">Harga Lama: </a>
+                                    <Input value={formatCurrency(hargaLama)} placeholder="" crossOrigin="" disabled>
+                                    </Input>
+                                </Typography>
+                            }
+                            <Typography variant="paragp" className="flex mt-5">
+                                <a className="font-bold w-1/5">Total Harga: </a>
+                                <Input value={formatCurrency(total_harga)} placeholder="" crossOrigin="" disabled>
+                                </Input>
+                            </Typography>
+                        </>
+                    }
                     {products.map((product, idx) =>
                         <>
                             <ProductInput
@@ -334,23 +418,40 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2 }: 
                     </div>
                 </>}
             <div className="justify-between flex">
-                <Button
-                    className="mt-5 ml-1 bg-gray-100 border border-blue-500"
-                    onClick={() => {
-                        handleSave('left');
-                    }}
-                    placeholder="">
-                    <p className="text-blue-500">Sebelumnya</p>
-                </Button>
+                {!canEdit ?
+                    <>
+                        <Button
+                            className="mt-5 ml-1 bg-gray-100 border border-blue-500"
+                            onClick={() => {
+                                handleSave('left');
+                            }}
+                            placeholder="">
+                            <p className="text-blue-500">Sebelumnya</p>
+                        </Button>
 
-                <Button
-                    className="bg-blue-500 mt-5"
-                    onClick={() => {
-                        handleSave('right');
-                    }}
-                    placeholder="">
-                    Selanjutnya
-                </Button>
+                        <Button
+                            className="bg-blue-500 mt-5"
+                            onClick={() => {
+                                handleSave('right');
+                            }}
+                            placeholder="">
+                            Selanjutnya
+                        </Button>
+                    </>
+                    : <>
+                        <Button
+                            className="mt-5 ml-1 bg-gray-100 border border-red-500"
+                            onClick={onPrev}
+                            placeholder="">
+                            <p className="text-red-500">Batal</p>
+                        </Button>
+                        <Button
+                            className="mt-5 ml-1 bg-gray-100 border border-green-500"
+                            onClick={handleEdit}
+                            placeholder="">
+                            <p className="text-green-500">Simpan</p>
+                        </Button>
+                    </>}
             </div>
         </>
     )
