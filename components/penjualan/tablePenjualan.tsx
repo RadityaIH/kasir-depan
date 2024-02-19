@@ -147,6 +147,8 @@ export default function TabelPenjualan({ TABLE_HEAD, TABLE_ROWS, isSearched, han
                 open={openDeleteDialog}
                 handleClose={handleCloseDeleteDialog}
                 handleConfirm={handleConfirmDelete}
+                head="Konfirmasi Hapus Data"
+                message="Apakah anda yakin ingin menghapus data ini?"
             />
             <DialogDetail handleOpen={handleOpen} open={open} selectedSO={selectedSO} />
 

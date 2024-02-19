@@ -64,7 +64,9 @@ export default function Inventory() {
 
     if (error) {
         return (
-            <div className="text-red-500">{error}</div>
+            <Card placeholder="" className="p-3 h-screen flex justify-center items-center">
+                <div className="text-red-500">{error}</div>
+            </Card>
         );
     }
 

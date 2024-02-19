@@ -72,7 +72,6 @@ export default function PenjualanSales() {
     };
 
     const { data: resChart, error: errorChart } = useSWR(selectedSales.value !== "all" ? `${process.env.BACKEND_API}/getSOperDateperSales/${selectedSales.value}` : null, fetcher);
-    console.log(resChart)
 
     const TABLE_HEAD = ["No", "Nama", "Penjualan", "Aksi"];
 
@@ -131,8 +130,6 @@ export default function PenjualanSales() {
         ...item,
         No: index + 1,
     }));
-
-    console.log(data)
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => {

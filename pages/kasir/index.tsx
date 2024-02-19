@@ -23,7 +23,7 @@ const fetcher = async (url: string) => {
     return response.json();
 };
 
-export default function dashboardKasir () {
+export default function DashboardKasir () {
     const { data: resSO, error } = useSWR(`${process.env.BACKEND_API}/getSOperDate`, fetcher);
     return (
         <>

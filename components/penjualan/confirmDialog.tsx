@@ -4,9 +4,11 @@ interface ConfirmDialogProps {
     open: boolean;
     handleClose: () => void;
     handleConfirm: () => void;
+    head: string;
+    message: string;
 }
 
-const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, handleClose, handleConfirm }) => {
+const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, handleClose, handleConfirm, head, message }) => {
     return (
         <Dialog
             size="sm"
@@ -16,8 +18,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, handleClose, handle
             placeholder=""
         >
             <Card className="p-8" placeholder="">
-                <h2 className="text-2xl font-bold mb-4">Konfirmasi Hapus Data</h2>
-                <p className="text-gray-700 mb-8">Apakah Anda yakin ingin menghapus data ini?</p>
+                <h2 className="text-2xl font-bold mb-4">{head}</h2>
+                <p className="text-gray-700 mb-8">{message}</p>
                 <div className="flex justify-end">
                     <Button
                         color="red"
@@ -32,7 +34,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, handleClose, handle
                         onClick={handleConfirm}
                         placeholder=""
                     >
-                        Hapus
+                        Konfirmasi
                     </Button>
                 </div>
             </Card>

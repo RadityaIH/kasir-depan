@@ -1,9 +1,11 @@
-import { Button, Card, Input, Textarea, Typography } from "@material-tailwind/react";
+import { Button, Card, Input, Spinner, Textarea, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { getCookie } from "cookies-next";
 import { isEqual, set } from "lodash";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import ConfirmDialog from "./confirmDialog";
+import Fail from "../fail";
 
 interface ProductChosen {
     idx: number
@@ -54,8 +56,26 @@ export default function ViewEditSO({ onNext, data, dataPage2, hargaLama, product
         }
     }, [dataPage2.total_harga])
 
-    const handleSubmit = async (event: any) => {
-        event.preventDefault()
+    //Confirm
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const handleOpenConfirmDialog = () => {
+        setOpenConfirmDialog(true);
+    };
+
+    const handleCloseConfirmDialog = () => {
+        setOpenConfirmDialog(false);
+    };
+
+    const handleConfirmEdit = async () => {
+        await handleSubmit();
+        setOpenConfirmDialog(false);
+    };
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+
+    const handleSubmit = async () => {
+        setLoading(true);
         console.log(dataPage2)
         try {
             const token = getCookie("token");
@@ -77,14 +97,41 @@ export default function ViewEditSO({ onNext, data, dataPage2, hargaLama, product
                 if (response.status !== 200) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
+                setError(false);
+                setLoading(false);
                 router.push("/kasir/penjualan");
-            } 
+            }
         } catch (error: any) {
             console.error(error);
+            setError(true);
+            setLoading(false);
         }
+    }
+
+    if (error) {
+        return (
+            <Card placeholder="" className="p-3 h-screen flex justify-center items-center">
+                <Fail Title="Error" Caption="Gagal menyimpan data" />
+            </Card>
+        )
+    }
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner color="red" />
+            </div>
+        )
     }
     return (
         <div>
+            <ConfirmDialog
+                open={openConfirmDialog}
+                handleClose={handleCloseConfirmDialog}
+                handleConfirm={handleConfirmEdit}
+                head="Konfirmasi Ubah Data"
+                message="Apakah Anda yakin ingin menyimpan perubahan?"
+            />
             <div className="flex justify-center">
                 <Typography variant="h4">{data.id_SO}</Typography>
             </div>
@@ -250,7 +297,7 @@ export default function ViewEditSO({ onNext, data, dataPage2, hargaLama, product
             <div className="justify-end flex mt-5">
                 <Button
                     className="bg-green-500"
-                    onClick={handleSubmit}
+                    onClick={handleOpenConfirmDialog}
                     placeholder="">
                     <p className="">Simpan</p>
                 </Button>

@@ -322,7 +322,9 @@ export default function InputPage2({ onPrev, onNext, dataPage2, setDataPage2, ca
     if (error) {
         return (
             <>
-                <div className="text-red-500">{error}</div>
+                <div className="flex justify-center">
+                    <div className="text-red-500">{error}</div>
+                </div>
                 <Button
                     className="mt-5 ml-1 bg-red-500"
                     onClick={onPrev}
