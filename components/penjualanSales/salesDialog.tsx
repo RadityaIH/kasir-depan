@@ -15,6 +15,7 @@ interface SalesResultResponse {
     id_SO: number;
     tanggal_transaksi: string;
     nama_cust: string;
+    total_harga: number;
 }
 
 const fetcher = async (url: string) => {
@@ -35,7 +36,7 @@ const fetcher = async (url: string) => {
 };
 
 export default function SalesDialog({handleOpen, open, idSales, salesName}: InputProps) {
-    const TABLE_HEAD = ["No", "Tanggal", "SO", "Nama Customer"]
+    const TABLE_HEAD = ["No", "Tanggal", "SO", "Nama Customer", "Harga"]
 
     const { data: resSalesResult, error } = useSWR(`${process.env.BACKEND_API}/getSalesResult/${idSales}`, fetcher);
     const [data, setData] = useState<SalesResultResponse[]>([]); // Initialize with empty array
@@ -59,6 +60,13 @@ export default function SalesDialog({handleOpen, open, idSales, salesName}: Inpu
 
         return `${day} ${months[monthIndex]} ${year}`;
     }
+
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+        }).format(value);
+    };
 
     return (
         <Dialog
@@ -120,8 +128,25 @@ export default function SalesDialog({handleOpen, open, idSales, salesName}: Inpu
                                                 {data.nama_cust}
                                             </Typography>
                                         </td>
+                                        <td className="p-4">
+                                            <Typography variant="small" color="blue-gray" classname="font-normal">
+                                                {formatCurrency(data.total_harga)}
+                                            </Typography>
+                                        </td>
                                     </tr>
                                 ))}
+                                <tr>
+                                    <td colSpan={4} className="p-4 bg-blue-gray-50  text-center">
+                                        <Typography variant="small" color="blue-gray" classname="font-normal">
+                                            Total
+                                        </Typography>
+                                    </td>
+                                    <td className="p-4">
+                                        <Typography variant="small" color="blue-gray" classname="font-normal">
+                                            {formatCurrency(data.reduce((acc, curr) => acc + curr.total_harga, 0))}
+                                        </Typography>
+                                    </td>
+                                </tr>
                         </tbody>
                     </table>
                 </div>
