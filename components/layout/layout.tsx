@@ -2,9 +2,9 @@ import React, { PropsWithChildren, useEffect, useState } from "react";
 import Sidebar from "./sidebar";
 import Navbar from "./navbar";
 import { getCookie } from "cookies-next";
-import { Spinner } from "@material-tailwind/react";
+import { Button, Card, Spinner } from "@material-tailwind/react";
 import { redirect } from "next/navigation";
-import router from "next/router";
+import router, { useRouter } from "next/router";
 
 const token = getCookie("token");
 
@@ -16,6 +16,12 @@ interface UserData {
 
 const Layout = ({ children }: PropsWithChildren) => {
     const [userData, setUserData] = useState<UserData | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
+
+    const handleBack = () => {
+        router.push("/");
+    }
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -45,13 +51,27 @@ const Layout = ({ children }: PropsWithChildren) => {
 
             } catch (error) {
                 console.error('Fetch error:', error);
-                return <div>Database Error!</div>
+                setError('Database Error!')
             }
         };
         
         fetchUserData();
         console.log(userData);
     }, [token]);
+
+    if (error) {
+        return (
+            <Card placeholder="" className="p-3 h-screen flex justify-center items-center">
+                <div className="text-red-500">{error}</div>
+                <Button
+                    className="mt-3 bg-red-500"
+                    onClick={handleBack}
+                    placeholder="">
+                    <p className="">Login</p>
+                </Button>
+            </Card>
+        );
+    }
 
     return (
         <div>
