@@ -106,6 +106,10 @@ export default function InputPage4({ onPrev, dataCust, dataPage2, dataPage3, set
         }
     }
 
+    const handleReload = () => {
+        window.location.reload();
+    }
+
     // console.log("cust:", dataCust)
     // console.log("page2:", dataPage2)
     // console.log("page3:", dataPage3)
@@ -113,15 +117,16 @@ export default function InputPage4({ onPrev, dataCust, dataPage2, dataPage3, set
         <>
             <Progress value={100} placeholder="" className="mb-3" color="red"></Progress>
             {saved &&
+            <>
                 <div className="flex justify-between gap-5 mt-10">
                     <div className="w-full">
-                        <Success Title="Berhasil!" Caption="Transaksi berhasil disimpan. Periksa halaman &ldquo;Penjualan&rdquo;" />
+                        <Success Title="Berhasil!" Caption="Transaksi berhasil disimpan. Periksa halaman&ldquo;Penjualan&rdquo;" />
                     </div>
                     <div className="cursor-pointer hover:bg-gray-200 p-1 rounded-lg" onClick={(e) => setSaved(false)}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 -2 32 32"
-                            className="w-6"
+                            className="w-6 ml-1"
                         >
                             <path
                                 fill="#000"
@@ -132,6 +137,8 @@ export default function InputPage4({ onPrev, dataCust, dataPage2, dataPage3, set
                         <Typography variant="paragraph">print</Typography>
                     </div>
                 </div>
+                <Typography variant="paragraph" className="mt-2 flex justify-start">Transaksi Baru? <button className=" text-orange" onClick={handleReload}>Klik Disini</button></Typography>
+            </>
             }
             {error && <Fail Title="Gagal Menyimpan!" Caption="Terjadi kesalahan" />}
             <Typography variant="h5" className="my-1 text-center">{saved ? "" : "Konfirmasi"} Sales Order {saved ? id_SO : ""}</Typography>

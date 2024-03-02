@@ -26,18 +26,18 @@ interface InputProps {
 }
 
 export default function LineChartAll({ value }: InputProps) {
-    const [month, setMonth] = useState<string>("1");
+    const [year, setYear] = useState<string>((new Date().getFullYear()).toString());
     const [filteredData, setFilteredData] = useState<{ tanggal_transaksi: string, Jumlah: number }[]>([]);
 
     useEffect(() => {
-        // Filter data based on selected month
+        // Filter data based on selected year
         const filtered = value.filter(item => {
             const transactionDate = new Date(item.tanggal_transaksi);
-            const transactionMonth = transactionDate.getMonth() + 1;
-            return transactionMonth.toString() === month;
+            const transactionYear = transactionDate.getFullYear().toString();
+            return transactionYear === year;
         });
         setFilteredData(filtered);
-    }, [month, value]);
+    }, [year, value]);
 
     const generateChartData = () => {
         const chartData: { labels: string[], datasets: any[] } = {
@@ -48,19 +48,19 @@ export default function LineChartAll({ value }: InputProps) {
                 borderColor: 'orange',
                 fill: false,
                 backgroundColor: 'black',
-                pointRadius: 4
+                pointRadius: 4,
+                tension: 0.4
             }]
         };
 
-        const daysInMonth = new Date(2024, parseInt(month), 0).getDate();
-
-        for (let i = 1; i <= daysInMonth; i++) {
-            chartData.labels.push(`${i}/${month}`);
-            const transactionsOnDay = filteredData.filter(item => {
-                const transactionDay = new Date(item.tanggal_transaksi).getDate();
-                return transactionDay === i;
+        for (let i = 1; i <= 12; i++) {
+            chartData.labels.push(i.toString());
+            const transactionsInMonth = filteredData.filter(item => {
+                const transactionDate = new Date(item.tanggal_transaksi);
+                const transactionMonth = transactionDate.getMonth() + 1;
+                return transactionMonth === i;
             });
-            const totalAmount = transactionsOnDay.reduce((acc, curr) => acc + curr.Jumlah, 0);
+            const totalAmount = transactionsInMonth.reduce((acc, curr) => acc + curr.Jumlah, 0);
             chartData.datasets[0].data.push(totalAmount);
         }
 
@@ -75,7 +75,7 @@ export default function LineChartAll({ value }: InputProps) {
                 type: 'category',
                 title: {
                     display: true,
-                    text: 'Tanggal'
+                    text: 'Bulan'
                 },
             },
             y: {
@@ -91,24 +91,16 @@ export default function LineChartAll({ value }: InputProps) {
             }
         }
     };
+
     return (
         <>
             <div className="flex">
                 <Typography variant="h4" className="mb-5 w-3/4 flex justify-center">Chart Penjualan</Typography>
                 <div className="w-1/4">
-                    <Select placeholder="" label="Pilih Bulan" value={month} onChange={(value) => setMonth(value as string)}>
-                        <Option value="1">Januari</Option>
-                        <Option value="2">Februari</Option>
-                        <Option value="3">Maret</Option>
-                        <Option value="4">April</Option>
-                        <Option value="5">Mei</Option>
-                        <Option value="6">Juni</Option>
-                        <Option value="7">Juli</Option>
-                        <Option value="8">Agustus</Option>
-                        <Option value="9">September</Option>
-                        <Option value="10">Oktober</Option>
-                        <Option value="11">November</Option>
-                        <Option value="12">Desember</Option>
+                    <Select placeholder="" label="Pilih Tahun" value={year} onChange={(value) => setYear(value as string)}>
+                        <Option value={(new Date().getFullYear() - 2).toString()}>{(new Date().getFullYear() - 2).toString()}</Option>
+                        <Option value={(new Date().getFullYear() - 1).toString()}>{(new Date().getFullYear() - 1).toString()}</Option>
+                        <Option value={new Date().getFullYear().toString()}>{new Date().getFullYear().toString()}</Option>
                     </Select>
                 </div>
             </div>

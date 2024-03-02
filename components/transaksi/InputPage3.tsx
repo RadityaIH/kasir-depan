@@ -53,7 +53,7 @@ export default function InputPage3({ onPrev, onNext, total_harga, dataPage3, set
         }
     }
 
-    const maxDP2 = total_harga - (downPayment1 || 0);
+    const maxDP2 = total_harga - (downPayment1 || 0) + 0.01;
     const handleDP2 = (value: number) => {
         if (value <= maxDP2) {
             setDownPayment2(value);
@@ -245,7 +245,7 @@ export default function InputPage3({ onPrev, onNext, total_harga, dataPage3, set
                             crossOrigin=""
                             className="bg-gray-50"
                             value={downPayment2 ? downPayment2 : ""}
-                            onChange={(e) => handleDP2(parseInt(e.target.value))}
+                            onChange={(e) => handleDP2(parseFloat(e.target.value))}
                             label="Contoh: 1500000"></Input>
                     </div>
                 </div>
