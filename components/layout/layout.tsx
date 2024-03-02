@@ -43,7 +43,12 @@ const Layout = ({ children }: PropsWithChildren) => {
 
                     const data = await response.json();
                     setUserData(data);
-                    console.log(data);
+                    // console.log(data);
+                    if (router.pathname === "/kasir" && data.role === "Admin") {
+                        router.push("/admin");
+                    } else if (router.pathname === "/admin" && data.role === "Kasir") {
+                        router.push("/kasir");
+                    }
                 } else {
                     router.push('/');
                     return;
@@ -56,7 +61,7 @@ const Layout = ({ children }: PropsWithChildren) => {
         };
         
         fetchUserData();
-        console.log(userData);
+        // console.log(userData);
     }, [token]);
 
     if (error) {

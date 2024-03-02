@@ -53,8 +53,13 @@ export default function LineChartAll({ value }: InputProps) {
             }]
         };
 
+        const monthNames = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+    
         for (let i = 1; i <= 12; i++) {
-            chartData.labels.push(i.toString());
+            chartData.labels.push(monthNames[i - 1]); // Ambil nama bulan dari array monthNames
             const transactionsInMonth = filteredData.filter(item => {
                 const transactionDate = new Date(item.tanggal_transaksi);
                 const transactionMonth = transactionDate.getMonth() + 1;
@@ -63,6 +68,7 @@ export default function LineChartAll({ value }: InputProps) {
             const totalAmount = transactionsInMonth.reduce((acc, curr) => acc + curr.Jumlah, 0);
             chartData.datasets[0].data.push(totalAmount);
         }
+    
 
         return chartData;
     };
