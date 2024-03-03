@@ -6,7 +6,7 @@ import { use, useEffect, useState } from "react";
 import useSWR, { mutate } from 'swr';
 import Select from 'react-select'
 import DateInput from "@/components/transaksi/dateInput";
-import AddSalesDialog from "@/components/penjualanSales/addSales";
+import AddSalesDialog from "@/components/admin/addSales";
 import LineChartAll from "@/components/dashboard/chartAll";
 import SalesDialog from "@/components/penjualanSales/salesDialog";
 
