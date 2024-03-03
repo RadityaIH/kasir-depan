@@ -28,7 +28,7 @@ const Sidebar = (props: { nama: string, role: string }) => {
   const router = useRouter();
 
   return (
-    <div className="px-8 pb-10 shadow-lg shadow-red-500/20 justify-center border-solid border-5 rounded-lg bg-gray-300 m-3 sticky top-20">
+    <div className="px-8 pb-10 shadow-lg shadow-red-500/20 justify-center border-solid border-5 rounded-lg bg-gray-300 m-3 sticky top-3">
       {role === "Kasir" &&
         <div className="flex-none text-left">
           <div className="flex justify-center">

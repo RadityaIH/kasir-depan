@@ -78,7 +78,7 @@ export default function LineChartAll({ value }: InputProps) {
     const options = {
         scales: {
             x: {
-                type: 'category',
+                // type: 'time',
                 title: {
                     display: true,
                     text: 'Bulan'

@@ -82,7 +82,7 @@ const Layout = ({ children }: PropsWithChildren) => {
         <div>
             {userData ? (
             <>
-            <div className="h-1/5 sticky top-0 z-50">
+            <div className="h-1/5">
                 <Navbar username={userData ? userData.username : ""}/>
             </div>
             <div className="flex h-4/5">
