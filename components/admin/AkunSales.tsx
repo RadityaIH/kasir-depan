@@ -5,6 +5,7 @@ import useSWR, { mutate } from "swr";
 import Pagination from "../pagination";
 import _ from "lodash";
 import AddSalesDialog from "./addSales";
+import ConfirmDialog from "../penjualan/confirmDialog";
 
 interface SalesResponse {
     id_sales: number;
@@ -34,6 +35,7 @@ const fetcher = async (url: string) => {
 };
 
 export default function AkunSales({ changes, handleChanges }: InputProps) {
+    //FETCHING DATA
     const { data: resSales, error } = useSWR(
         `${process.env.BACKEND_API}/getSales`,
         fetcher,
@@ -53,6 +55,7 @@ export default function AkunSales({ changes, handleChanges }: InputProps) {
         }
     }, [resSales]);
 
+    //HANLDE SEARCH
     const handleSearchChange = (value: string) => {
         if (value === "") {
             setData(resSales);
@@ -69,6 +72,7 @@ export default function AkunSales({ changes, handleChanges }: InputProps) {
         No: index + 1,
     }));
     
+    //PAGINATION
     const [posts, setposts] = useState<SalesResponse[]>([]);
     const [currentPage, setcurrentPage] = useState(1);
 
@@ -91,6 +95,7 @@ export default function AkunSales({ changes, handleChanges }: InputProps) {
 
     const TABLE_HEAD = ["No", "Nama Lengkap", "Aksi"]
 
+    //EDIT
     const [selectedIdSales, setSelectedIdSales] = useState<number>(0);
     const [selectedNamaSales, setSelectedNamaSales] = useState<string>("");
     const [sales, setSales] = useState<SalesResponse>({
@@ -108,8 +113,64 @@ export default function AkunSales({ changes, handleChanges }: InputProps) {
         setOpenSales((cur) => !cur)
     };
 
+    //delete
+    const { data: resSOSales, error: errSOSales } = useSWR(`${process.env.BACKEND_API}/getSalesAll`, fetcher);
+    const checkPenjualan = (id_sales: number) => {
+        if (resSOSales) {
+            const penjualan = resSOSales.filter((item: any) => item.id_sales === id_sales && item.Penjualan !== 0);
+            return penjualan.length;
+        }
+    }
+
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [selectedIdToDelete, setSelectedIdtoDelete] = useState("");
+
+    const handleOpenDeleteDialog = (id_SO: string) => {
+        setSelectedIdtoDelete(id_SO);
+        setOpenDeleteDialog(true);
+    };
+
+    const handleCloseDeleteDialog = () => {
+        setOpenDeleteDialog(false);
+    };
+
+    const handleConfirmDelete = async () => {
+        await handleDelete(selectedIdToDelete);
+        setOpenDeleteDialog(false);
+    };
+
+    const handleDelete = async (id: string) => {
+        try {
+            const token = getCookie("token");
+            if (token) {
+                const response = await fetch(`${process.env.BACKEND_API}/deleteSales/${id}`, {
+                    method: "DELETE",
+                    credentials: "include",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (response.status !== 200) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+            }
+            handleCloseDeleteDialog();
+            handleChanges();
+        } catch (error: any) {
+            console.error('Fetch error');
+        }
+    }
+
     return (
         <div>
+            <ConfirmDialog
+                open={openDeleteDialog}
+                handleClose={handleCloseDeleteDialog}
+                handleConfirm={handleConfirmDelete}
+                head="Konfirmasi Hapus Data"
+                message="Apakah anda yakin ingin menghapus data ini?"
+            />
             <AddSalesDialog handleOpen={handleOpenSales} open={openSales} handleChanges={handleChanges} op={"Update"} sales={sales}/>
             <div className="justify-end flex">
                 <div className="w-4/12 mb-5">
@@ -188,8 +249,8 @@ export default function AkunSales({ changes, handleChanges }: InputProps) {
                                         </div>
                                     </div>
                                     <div className="inline-block ml-2">
-                                        <div className={`p-2 hover:bg-red-300 rounded-xl cursor-pointer bg-red-500`}
-                                        // onClick={(e) => data.status_terima === 0 ? handleOpenDeleteDialog(data.id_SO) : null}
+                                        <div className={`${checkPenjualan(data.id_sales) === 0 ? `cursor-pointer bg-red-500` : `bg-red-500/35 cursor-not-allowed`} p-2 hover:bg-red-300 rounded-xl `}
+                                        onClick={(e) => handleOpenDeleteDialog(data.id_sales)}
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"

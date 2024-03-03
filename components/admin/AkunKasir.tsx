@@ -5,6 +5,7 @@ import useSWR, { mutate } from "swr";
 import _ from "lodash";
 import Pagination from "../pagination";
 import AddKasirDialog from "./addKasir";
+import ConfirmDialog from "../penjualan/confirmDialog";
 
 interface KasirResponse {
     id: number;
@@ -95,6 +96,7 @@ export default function AkunKasir({ changes, handleChanges }: InputProps) {
 
     const TABLE_HEAD = ["No", "Nama Lengkap", "Username", "Aksi"]
 
+    //Edit
     const [selectedIdKasir, setSelectedIdKasir] = useState<number>(0);
     const [selectedNamaKasir, setSelectedNamaKasir] = useState<string>("");
     const [selectedUsernameKasir, setSelectedUsernameKasir] = useState<string>("");
@@ -115,9 +117,57 @@ export default function AkunKasir({ changes, handleChanges }: InputProps) {
         setOpenKasir((cur) => !cur)
     };
 
+    //delete
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [selectedIdToDelete, setSelectedIdtoDelete] = useState("");
+
+    const handleOpenDeleteDialog = (id_SO: string) => {
+        setSelectedIdtoDelete(id_SO);
+        setOpenDeleteDialog(true);
+    };
+
+    const handleCloseDeleteDialog = () => {
+        setOpenDeleteDialog(false);
+    };
+
+    const handleConfirmDelete = async () => {
+        await handleDelete(selectedIdToDelete);
+        setOpenDeleteDialog(false);
+    };
+
+    const handleDelete = async (id: string) => {
+        try {
+            const token = getCookie("token");
+            if (token) {
+                const response = await fetch(`${process.env.BACKEND_API}/deleteKasir/${id}`, {
+                    method: "DELETE",
+                    credentials: "include",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (response.status !== 200) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+            }
+            handleCloseDeleteDialog();
+            handleChanges();
+        } catch (error: any) {
+            console.error('Fetch error');
+        }
+    }
+
     return (
         <div>
-            <AddKasirDialog handleOpen={handleOpenKasir} open={openKasir} handleChanges={handleChanges} op={"Update"} kasir={kasir}/>
+            <ConfirmDialog
+                open={openDeleteDialog}
+                handleClose={handleCloseDeleteDialog}
+                handleConfirm={handleConfirmDelete}
+                head="Konfirmasi Hapus Data"
+                message="Apakah anda yakin ingin menghapus data ini?"
+            />
+            <AddKasirDialog handleOpen={handleOpenKasir} open={openKasir} handleChanges={handleChanges} op={"Update"} kasir={kasir} />
             <div className="justify-end flex">
                 <div className="w-4/12 mb-5">
                     <Input
@@ -178,12 +228,12 @@ export default function AkunKasir({ changes, handleChanges }: InputProps) {
                                 <div className="flex items-center">
                                     <div className="inline-block ml-2">
                                         <div className={`p-2 hover:bg-yellow-400 rounded-xl cursor-pointer bg-yellow-700`}
-                                        onClick={() => {
-                                            handleOpenKasir()
-                                            setSelectedIdKasir(data.id)
-                                            setSelectedNamaKasir(data.nama)
-                                            setSelectedUsernameKasir(data.username)
-                                        }}
+                                            onClick={() => {
+                                                handleOpenKasir()
+                                                setSelectedIdKasir(data.id)
+                                                setSelectedNamaKasir(data.nama)
+                                                setSelectedUsernameKasir(data.username)
+                                            }}
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -202,7 +252,7 @@ export default function AkunKasir({ changes, handleChanges }: InputProps) {
                                     </div>
                                     <div className="inline-block ml-2">
                                         <div className={`p-2 hover:bg-red-300 rounded-xl cursor-pointer bg-red-500`}
-                                        // onClick={(e) => data.status_terima === 0 ? handleOpenDeleteDialog(data.id_SO) : null}
+                                        onClick={(e) => handleOpenDeleteDialog(data.id)}
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
