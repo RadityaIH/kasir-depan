@@ -67,11 +67,8 @@ export default function AddSalesDialog({ handleOpen, open, handleChanges }: Inpu
                                 id="nama_customer"
                                 name="nama_customer"
                                 crossOrigin=""
-                                label="Nama Sales"
-                                // value={dataCust ? dataCust.nama : ""}
-                                // value={nama_cust}
+                                placeholder="Nama Sales"
                                 onChange={(e) => setNamaSales(e.target.value)}
-                                // onChange={(e) => setDataCust({ ...dataCust, nama: e.target.value })}
                                 className="bg-gray-50"></Input>
                         </div>
                     </CardBody>

@@ -136,7 +136,7 @@ export default function SalesDialog({handleOpen, open, idSales, salesName}: Inpu
                                     </tr>
                                 ))}
                                 <tr>
-                                    <td colSpan={4} className="p-4 bg-blue-gray-50  text-center">
+                                    <td colSpan={4} className="p-4 bg-blue-100  text-center">
                                         <Typography variant="small" color="blue-gray" classname="font-normal">
                                             Total
                                         </Typography>

@@ -131,11 +131,6 @@ export default function PenjualanSales() {
         No: index + 1,
     }));
 
-    const [open, setOpen] = useState(false);
-    const handleOpen = () => {
-        setOpen((cur) => !cur)
-    };
-
     const [openDetail, setOpenDetail] = useState(false);
     const handleOpenDetail = () => {
         setOpenDetail((cur) => !cur)
@@ -165,7 +160,6 @@ export default function PenjualanSales() {
     return (
         <>
             <SalesDialog handleOpen={handleOpenDetail} open={openDetail} idSales={selectedIdSales} salesName={selectedSalesName} />
-            <AddSalesDialog handleOpen={handleOpen} open={open} handleChanges={handleChanges} />
             <Head>
                 <title>Penjualan Sales</title>
             </Head>
@@ -220,29 +214,6 @@ export default function PenjualanSales() {
                         <div className="mt-4">
                             {(!errorChart && !!resChart) && <LineChartAll value={resChart} />}
                         </div>}
-                </div>
-                <div className="fixed bottom-5 right-5">
-                    <button className="ml-1 mt-3 p-3 rounded-full bg-orange"
-                        onClick={handleOpen}
-                        type="button">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            className="w-8"
-                        >
-                            <title />
-                            <g
-                                fill="none"
-                                stroke="#FFF"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                data-name="add"
-                            >
-                                <path d="M12 19V5M5 12h14" />
-                            </g>
-                        </svg>
-                    </button>
                 </div>
             </Card>
         </>

@@ -64,16 +64,29 @@ const Layout = ({ children }: PropsWithChildren) => {
         // console.log(userData);
     }, [token]);
 
+    const handleReload = () => {
+        window.location.reload();
+    }
+
     if (error) {
         return (
             <Card placeholder="" className="p-3 h-screen flex justify-center items-center">
                 <div className="text-red-500">{error}</div>
-                <Button
-                    className="mt-3 bg-red-500"
-                    onClick={handleBack}
-                    placeholder="">
-                    <p className="">Login</p>
-                </Button>
+                <div className="flex gap-5 mt-3">
+                    <Button
+                        className="bg-blue-500"
+                        onClick={handleReload}
+                        placeholder="">
+                        <p className="">Reload</p>
+                    </Button>
+                    <p className="mt-2">atau</p>
+                    <Button
+                        className="bg-red-500"
+                        onClick={handleBack}
+                        placeholder="">
+                        <p className="">Login</p>
+                    </Button>
+                </div>
             </Card>
         );
     }
