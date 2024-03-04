@@ -129,7 +129,7 @@ export default function PrintSO() {
             <div className="flex justify-center">
                 <Typography variant="h4">SALES ORDER PRODUCT</Typography>
             </div>
-            <div className="flex justify-between mt-5">
+            <div className="flex justify-between mt-10">
                 <div className="flex w-1/2">
                     <Typography variant="h6" className="w-1/4">No:&nbsp;</Typography>
                     <Typography variant="paragraph">{data?.id_SO}</Typography>
@@ -163,7 +163,7 @@ export default function PrintSO() {
                     <Typography variant="paragraph">{data?.nama_sales}</Typography>
                 </div>
             </div>
-            <table className="w-full text-left mt-8 border border-collapse">
+            <table className="w-full text-left mt-12 border border-collapse">
                 <thead>
                     <tr>
                         <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-2 border">No</th>
@@ -178,28 +178,32 @@ export default function PrintSO() {
                 <tbody>
                     {products.map((data, index) => (
                         <tr key={index} className="even:bg-blue-gray-50/50">
-                            <td className="p-2 border">{index + 1}</td>
-                            <td className="p-2 border">{data.nama_produk}</td>
-                            <td className="p-2 border">{data.kode_produk}</td>
-                            <td className="p-2 border">{data.qty}</td>
-                            <td className="p-2 border">{formatCurrency(data.harga)}</td>
-                            <td className="p-2 border">{formatCurrency(data.qty * data.harga)}</td>
-                            <td className="p-2 border">{data.remarks}</td>
+                            <td className="p-2 border border-blue-gray-100">{index + 1}</td>
+                            <td className="p-2 border border-blue-gray-100">{data.nama_produk}</td>
+                            <td className="p-2 border border-blue-gray-100">{data.kode_produk}</td>
+                            <td className="p-2 border border-blue-gray-100">{data.qty}</td>
+                            <td className="p-2 border border-blue-gray-100">{formatCurrency(data.harga)}</td>
+                            <td className="p-2 border border-blue-gray-100">{formatCurrency(data.qty * data.harga)}</td>
+                            <td className="p-2 border border-blue-gray-100">{data.remarks}</td>
                         </tr>
                     ))}
                     <tr>
-                        <td colSpan={6} className="bg-blue-gray-50 p-2 border" color="lightblue"><p className="text-center">Total</p></td>
-                        <td className="p-1 border">{data && formatCurrency(data.total_harga)}</td>
+                        <td colSpan={6} className="p-2 border-b border border-blue-gray-100"><p className="text-center font-bold">Total</p></td>
+                        <td className="p-1 border-b border border-blue-gray-100">{data && formatCurrency(data.total_harga)}</td>
                     </tr>
                     <tr>
-                        <td colSpan={5} className=""><p className=" text-center">Down Payment 1</p></td>
-                        <td className="p-1 border">{data?.metode_dp1}</td>
-                        <td className="p-1 border">{data && formatCurrency(data.total_dp1)}</td>
+                        <td colSpan={5} className="p-2 border-b border border-blue-gray-100"><p className=" text-center font-bold">Down Payment 1</p></td>
+                        <td className="p-1 border-b border border-blue-gray-100">{data?.metode_dp1}</td>
+                        <td className="p-1 border-b border border-blue-gray-100">{data && formatCurrency(data.total_dp1)}</td>
                     </tr>
                     <tr>
-                        <td colSpan={5} className=""><p className=" text-center">Down Payment 2</p></td>
-                        <td className="p-1 border">{data && (data.metode_dp2 ? data.metode_dp2 : "-")}</td>
-                        <td className="p-1 border">{data && (data.total_dp2 ? formatCurrency(data.total_dp2): "-")}</td>
+                        <td colSpan={5} className="p-2 border-b border border-blue-gray-100"><p className=" text-center font-bold">Down Payment 2</p></td>
+                        <td className="p-1 border-b border border-blue-gray-100">{data && (data.metode_dp2 ? data.metode_dp2 : "-")}</td>
+                        <td className="p-1 border-b border border-blue-gray-100">{data && (data.total_dp2 ? formatCurrency(data.total_dp2): "-")}</td>
+                    </tr>
+                    <tr>
+                        <td colSpan={6} className="bg-blue-gray-50 p-2 border-b border border-blue-gray-100" color="lightblue"><p className="text-center font-bold">Balance Due</p></td>
+                        <td className="p-1 border-b border border-blue-gray-100">{data && formatCurrency(data.balance_due)}</td>
                     </tr>
                 </tbody>
             </table>
