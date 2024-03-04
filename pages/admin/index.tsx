@@ -24,7 +24,7 @@ const fetcher = async (url: string) => {
 };
 
 export default function DashboardKasir () {
-    const { data: resSales, error: errSales } = useSWR(`${process.env.BACKEND_API}/getSales`, fetcher);
+    const { data: resSales, error: errSales } = useSWR(`${process.env.BACKEND_API}/getAllSales`, fetcher);
     const { data: resKasir, error: errKasir } = useSWR(`${process.env.BACKEND_API}/getKasir`, fetcher);
     return (
         <>
@@ -39,15 +39,25 @@ export default function DashboardKasir () {
                         <Card className="w-1/2 p-5 h-auto bg-orange text-white" placeholder={"card"}>
                             <div className="flex justify-between align-bottom">
                                 <Typography variant="h6" className="mb-3">Jumlah Kasir</Typography>
-                                <Typography variant="h1" className="mb-3">{resKasir.length}</Typography>
+                                <Typography variant="h1" className="mb-3">{resKasir && resKasir.length}</Typography>
                             </div>
                         </Card>
-                        <Card className="w-1/2 p-5 h-auto bg-gray-800 text-white" placeholder={"card"}>
-                        <div className="flex justify-between align-bottom">
-                                <Typography variant="h6" className="mb-3">Jumlah Sales</Typography>
-                                <Typography variant="h1" className="mb-3">{resSales.length}</Typography>
+                        <Card className="w-1/2 p-5 h-auto bg-gray-200 text-gray-800 border-2" placeholder={"card"}>
+                            <div className="flex justify-between align-bottom">
+                                <Typography variant="h6" className="mb-3">Jumlah Sales Aktif</Typography>
+                                <Typography variant="h1" className="mb-3">{resSales && resSales.filter((sale: { aktif: number; }) => sale.aktif === 1).length}</Typography>
                             </div>
                         </Card>
+                    </div>
+                    <div className="flex gap-5 mt-5">
+                        <Card className="w-1/2 p-5 h-auto bg-gray-800 text-white border-2" placeholder={"card"}>
+                            <div className="flex justify-between align-bottom">
+                                <Typography variant="h6" className="mb-3">Jumlah Sales Tidak Aktif</Typography>
+                                <Typography variant="h1" className="mb-3">{resSales && resSales.filter((sale: { aktif: number; }) => sale.aktif === 0).length}</Typography>
+                            </div>
+                        </Card>
+                        <div className="w-1/2 p-5 h-auto">
+                        </div>
                     </div>
                 </div>
             </Card>
