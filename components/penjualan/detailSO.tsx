@@ -122,10 +122,28 @@ export default function DialogDetail({ handleOpen, open, selectedSO }: InputProp
             handler={handleOpen}
             className="bg-transparent shador-none"
             placeholder="">
-            <Card placeholder="" className="overflow-y-auto h-screen">
+            <Card placeholder="" className="h-screen overflow-scroll">
                 <>
                     <CardBody placeholder="" className="z-0">
-                        <div className="flex justify-center">
+                        <div className="flex justify-end">
+                            <Link href={`/print/${selectedSO.id_SO}`} target="blank">
+                                <div className="cursor-pointer hover:bg-gray-200 p-1 rounded-lg">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 -2 32 32"
+                                        className="w-6 ml-1"
+                                    >
+                                        <path
+                                            fill="#000"
+                                            fillRule="evenodd"
+                                            d="M30 21a2 2 0 0 1-2 2h-2.142A3.99 3.99 0 0 0 22 20H10a3.99 3.99 0 0 0-3.858 3H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h24a2 2 0 0 1 2 2v2Zm-8 5H10a2 2 0 0 1 0-4h12a2 2 0 0 1 0 4ZM8 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v11H8V4Zm20 11h-2V4a4 4 0 0 0-4-4H10a4 4 0 0 0-4 4v11H4a4 4 0 0 0-4 4v2a4 4 0 0 0 4 4h2.142A3.988 3.988 0 0 0 10 28h12a3.988 3.988 0 0 0 3.858-3H28a4 4 0 0 0 4-4v-2a4 4 0 0 0-4-4Z"
+                                        />
+                                    </svg>
+                                    <Typography variant="paragraph">print</Typography>
+                                </div>
+                            </Link>
+                        </div>
+                        <div className="flex justify-center" id="id_SO">
                             <Typography variant="h4">{selectedSO && selectedSO.id_SO}</Typography>
                         </div>
                         <div className="flex mt-5 justify-between gap-5">
@@ -293,10 +311,10 @@ export default function DialogDetail({ handleOpen, open, selectedSO }: InputProp
                                     <p className="text-black text-center">Edit</p>
                                 </div>
                             </Button>
-                        : 
-                        <div>
-                            <p className="text-red-500">Barang yang sudah diterima tidak bisa diedit.</p>
-                        </div>}
+                            :
+                            <div>
+                                <p className="text-red-500">Barang yang sudah diterima tidak bisa diedit.</p>
+                            </div>}
                     </CardFooter>
                 </>
             </Card>
