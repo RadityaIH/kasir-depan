@@ -1,5 +1,6 @@
 import { Typography } from "@material-tailwind/react";
 import { getCookie } from "cookies-next";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
@@ -54,7 +55,7 @@ const fetcher = async (url: string) => {
     return response.json();
 };
 
-export default function printSO() {
+export default function PrintSO() {
     const router = useRouter();
     const { id_SO } = router.query;
 
@@ -122,6 +123,9 @@ export default function printSO() {
     }
     return (
         <div className="mx-5">
+            <Head>
+                <title>Print SO</title>
+            </Head>
             <div className="flex justify-center">
                 <Typography variant="h4">SALES ORDER PRODUCT</Typography>
             </div>

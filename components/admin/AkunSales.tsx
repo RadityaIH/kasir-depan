@@ -57,7 +57,7 @@ export default function AkunSales({ changes, handleChanges }: InputProps) {
     }, [resSales]);
 
     //HANLDE SEARCH
-    const [statusAktif, setStatusAktif] = useState<string>("all");
+    const [statusAktif, setStatusAktif] = useState<string>("aktif");
     const [searchValue, setSearchValue] = useState<string>("");
     useEffect(() => {
         let filteredData = resSales; // Gunakan resSales sebagai data awal

@@ -150,7 +150,7 @@ export default function TabelPenjualan({ TABLE_HEAD, TABLE_ROWS, isSearched, han
                 head="Konfirmasi Hapus Data"
                 message="Apakah anda yakin ingin menghapus data ini?"
             />
-            <DialogDetail handleOpen={handleOpen} open={open} selectedSO={selectedSO} />
+            <DialogDetail handleOpen={handleOpen} open={open} selectedSO={selectedSO} handleChanges={handleChanges}/>
 
             <Card className="overflow-auto h-auto" placeholder="">
                 <table className="w-full text-left">

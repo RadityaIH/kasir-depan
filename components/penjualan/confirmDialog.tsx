@@ -14,7 +14,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, handleClose, handle
             size="sm"
             open={open}
             handler={handleClose}
-            className="bg-transparent shadow-none"
+            className="bg-transparent shadow-none z-50"
             placeholder=""
         >
             <Card className="p-8" placeholder="">
