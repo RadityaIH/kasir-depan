@@ -12,6 +12,7 @@ interface UserData {
     username: string;
     nama: string;
     role: string;
+    photo_url: string;
   }
 
 const Layout = ({ children }: PropsWithChildren) => {
@@ -96,7 +97,7 @@ const Layout = ({ children }: PropsWithChildren) => {
             {userData ? (
             <>
             <div className="h-1/5">
-                <Navbar username={userData ? userData.username : ""}/>
+                <Navbar username={userData ? userData.username : ""} photo_url={userData ? userData.photo_url : ""}/>
             </div>
             <div className="flex h-4/5">
                 <div className="w-1/5">
