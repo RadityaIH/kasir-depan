@@ -60,23 +60,25 @@ export default function AkunSales({ changes, handleChanges }: InputProps) {
     const [statusAktif, setStatusAktif] = useState<string>("aktif");
     const [searchValue, setSearchValue] = useState<string>("");
     useEffect(() => {
-        let filteredData = resSales; // Gunakan resSales sebagai data awal
-
-        // Filter berdasarkan statusAktif
-        if (statusAktif === "aktif") {
-            filteredData = resSales.filter((row: any) => row.aktif === 1);
-        } else if (statusAktif === "tidak") {
-            filteredData = resSales.filter((row: any) => row.aktif === 0);
+        if (resSales) {
+            let filteredData = resSales; // Gunakan resSales sebagai data awal
+    
+            // Filter berdasarkan statusAktif
+            if (statusAktif === "aktif") {
+                filteredData = resSales.filter((row: any) => row.aktif === 1);
+            } else if (statusAktif === "tidak") {
+                filteredData = resSales.filter((row: any) => row.aktif === 0);
+            }
+    
+            // Filter berdasarkan pencarian
+            if (searchValue !== "") {
+                filteredData = filteredData.filter((row: any) =>
+                    row.nama_sales.toLowerCase().includes(searchValue.toLowerCase())
+                );
+            }
+    
+            setData(filteredData); // Update data setelah filter dan pencarian
         }
-
-        // Filter berdasarkan pencarian
-        if (searchValue !== "") {
-            filteredData = filteredData.filter((row: any) =>
-                row.nama_sales.toLowerCase().includes(searchValue.toLowerCase())
-            );
-        }
-
-        setData(filteredData); // Update data setelah filter dan pencarian
     }, [statusAktif, searchValue, resSales]);
 
 
