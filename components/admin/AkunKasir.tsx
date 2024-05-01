@@ -199,7 +199,7 @@ export default function AkunKasir({ changes, handleChanges }: InputProps) {
                                 <Typography
                                     variant="small"
                                     color="blue-gray"
-                                    classname="leading-none opacity-70 font-bold">
+                                    className="leading-none opacity-70 font-bold">
                                     {item}
                                 </Typography>
                             </th>
@@ -207,20 +207,20 @@ export default function AkunKasir({ changes, handleChanges }: InputProps) {
                     </tr>
                 </thead>
                 <tbody>
-                    {finalPosts.map((data, index) => (
+                    {finalPosts.map((data: any, index: any) => (
                         <tr key={index} className="even:bg-blue-gray-50/50">
                             <td className="p-4">
-                                <Typography variant="small" color="blue-gray" classname="font-normal">
+                                <Typography variant="small" color="blue-gray" className="font-normal">
                                     {data.No}
                                 </Typography>
                             </td>
                             <td className="p-4">
-                                <Typography variant="small" color="blue-gray" classname="font-normal">
+                                <Typography variant="small" color="blue-gray" className="font-normal">
                                     {data.nama}
                                 </Typography>
                             </td>
                             <td className="p-4">
-                                <Typography variant="small" color="blue-gray" classname="font-normal">
+                                <Typography variant="small" color="blue-gray" className="font-normal">
                                     {data.username}
                                 </Typography>
                             </td>
