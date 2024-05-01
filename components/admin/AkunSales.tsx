@@ -231,7 +231,7 @@ export default function AkunSales({ changes, handleChanges }: InputProps) {
                                 <Typography
                                     variant="small"
                                     color="blue-gray"
-                                    classname="leading-none opacity-70 font-bold">
+                                    className="leading-none opacity-70 font-bold">
                                     {item}
                                 </Typography>
                             </th>
@@ -249,12 +249,12 @@ export default function AkunSales({ changes, handleChanges }: InputProps) {
                         finalPosts.map((data, index) => (
                             <tr key={index} className="even:bg-blue-gray-50/50">
                                 <td className="p-4">
-                                    <Typography variant="small" color="blue-gray" classname="font-normal">
+                                    <Typography variant="small" color="blue-gray" className="font-normal">
                                         {data.No}
                                     </Typography>
                                 </td>
                                 <td className="p-4">
-                                    <Typography variant="small" color="blue-gray" classname="font-normal">
+                                    <Typography variant="small" color="blue-gray" className="font-normal">
                                         {data.nama_sales}
                                     </Typography>
                                 </td>
